@@ -1,0 +1,867 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#000000"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="format-detection" content="telephone=no"><title>BUS 14</title>
+<style>
+:root{--bg:#000;--fg:#d8dde3;--ac:#d9a93a;--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#000}}
+:root[data-theme=dark]{--bg:#000}
+html,body{position:fixed;inset:0;width:100%;height:100%;margin:0;padding:0;background:var(--bg);overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;font-family:'Courier New',monospace;color:var(--fg);touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{position:fixed;inset:0;display:block;width:100%;height:100%;outline:none}
+.ov{position:fixed;inset:0;z-index:5;background:rgba(0,0,0,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(20px + var(--sat)) calc(20px + var(--sar)) calc(20px + var(--sab)) calc(20px + var(--sal));text-align:center;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;justify-content:safe center}
+.hid{display:none!important}
+h1{font-size:clamp(56px,16vw,120px);letter-spacing:.12em;margin:0 0 10px;text-shadow:0 0 24px #a02418}
+p{max-width:440px;line-height:1.6;margin:0}
+button{background:none;border:1px solid #778;color:var(--fg);font:inherit;padding:13px 28px;min-width:230px;font-size:18px;letter-spacing:.15em}
+button:active{background:#fff2}
+label{display:flex;gap:10px;align-items:center}
+#hud{position:fixed;inset:0;z-index:2;pointer-events:none}
+#jn{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:calc(18px + var(--sal));font-size:20px;letter-spacing:.2em;opacity:.85}
+#pb{pointer-events:auto;position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:calc(14px + var(--sar));min-width:0;padding:8px 14px;font-size:16px}
+#msg{position:absolute;left:0;right:0;bottom:24%;text-align:center;font-size:clamp(16px,3.6vw,24px);text-shadow:0 0 8px #000,0 0 3px #000;padding:0 calc(20px + var(--sar)) 0 calc(20px + var(--sal));box-sizing:border-box;transition:opacity 1s;opacity:0}
+#pr{position:absolute;left:0;right:0;top:60%;text-align:center;color:var(--ac);font-size:18px;text-shadow:0 0 6px #000}
+#vb{pointer-events:auto;position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:calc(64px + var(--sar));min-width:0;padding:8px 12px;font-size:16px}
+#fb{pointer-events:auto;position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:calc(114px + var(--sar));min-width:0;padding:8px 12px;font-size:16px}
+#eb{pointer-events:auto;position:absolute;right:calc(26px + env(safe-area-inset-right,0px));bottom:calc(40px + env(safe-area-inset-bottom,0px));width:clamp(76px,20vmin,100px);height:clamp(76px,20vmin,100px);border-radius:50%;min-width:0;padding:0;font-size:30px;border:2px solid var(--ac);color:var(--ac);display:none;background:#0008}
+#js{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border:2px solid #fff4;border-radius:50%;display:none}
+#jk{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#fff5}
+#fade{position:fixed;inset:0;z-index:3;background:#000;opacity:1;transition:opacity 1s;pointer-events:none}
+#ttl{white-space:pre-line;line-height:1.5;position:fixed;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(26px,7vw,60px);letter-spacing:.25em;pointer-events:none;opacity:0;transition:opacity 1s}
+body.gl #c{animation:g .12s steps(2) infinite}
+@keyframes g{0%{filter:hue-rotate(90deg) contrast(2.5);transform:translateX(-14px) skewX(6deg)}100%{filter:invert(1);transform:translateX(12px) scaleY(1.05)}}
+#vt{position:fixed;z-index:4;left:50%;transform:translateX(-50%);top:calc(56px + env(safe-area-inset-top,0px));background:#000b;border:1px solid #889;padding:10px 14px;text-align:center;max-width:92vw}#vt button{min-width:0;font-size:16px;padding:14px 26px;min-height:48px;margin:8px 6px 0;letter-spacing:.05em}#vs,#ml{white-space:pre-line;font-size:13px}input{background:#000;color:var(--fg);border:1px solid #778;font:inherit;padding:10px;width:100px;text-align:center;font-size:18px}
+#cb{position:fixed;z-index:4;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));min-width:0;padding:8px 16px;font-size:14px;letter-spacing:.05em;background:#000a}#cp{position:fixed;z-index:4;left:50%;transform:translateX(-50%);bottom:calc(58px + env(safe-area-inset-bottom,0px));width:min(92vw,380px);box-sizing:border-box;background:#000c;border:1px solid #889;padding:8px;font-size:13px}#cl{max-height:28vh;overflow-y:auto;overflow-x:hidden;text-align:left;margin-bottom:6px;word-break:break-word;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;user-select:text;-webkit-user-select:text;scrollbar-width:thin;scrollbar-color:#889 transparent;padding-right:4px}
+#cl::-webkit-scrollbar{width:6px}#cl::-webkit-scrollbar-track{background:transparent}#cl::-webkit-scrollbar-thumb{background:#889;border-radius:3px}#cl::-webkit-scrollbar-thumb:hover{background:#aab}#cr{display:flex;gap:6px}#ci{flex:1;min-width:0;width:auto;text-align:left;font-size:16px;padding:8px}#cr button{min-width:0;padding:8px 12px;font-size:14px;letter-spacing:0}
+select{background:#000;color:var(--fg);border:1px solid #778;font:inherit;padding:8px}
+/* ---------- loading screen */
+#ld{position:fixed;inset:0;z-index:20;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:calc(20px + var(--sat)) calc(20px + var(--sar)) calc(20px + var(--sab)) calc(20px + var(--sal));box-sizing:border-box;text-align:center;color:var(--ac);opacity:1;transition:opacity .6s ease;overflow:hidden}
+#ld.off{opacity:0;pointer-events:none}
+#ld::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,#0000 0,#0000 2px,#ffffff08 3px);pointer-events:none}
+#ld::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#0000 40%,#000 100%);pointer-events:none}
+#ldn{font-size:clamp(44px,13vw,96px);letter-spacing:.14em;color:var(--fg);text-shadow:0 0 22px #a02418;animation:ldf 3.2s steps(1) infinite;margin:0 0 4px}
+#ldr{font-size:12px;letter-spacing:.35em;opacity:.55}
+#ldt{font-size:clamp(14px,3.6vw,18px);letter-spacing:.3em;text-shadow:0 0 8px #d9a93a66;min-height:1.4em}
+#ldt i{font-style:normal;animation:ldd 1.2s infinite;opacity:.15}#ldt i:nth-child(2){animation-delay:.2s}#ldt i:nth-child(3){animation-delay:.4s}
+#ldbar{width:min(70vw,320px);height:4px;border:1px solid #d9a93a66;padding:1px;box-sizing:content-box}
+#ldb{height:100%;width:0;background:var(--ac);box-shadow:0 0 10px #d9a93a;transition:width .22s ease-out}
+#ldp{font-size:12px;letter-spacing:.2em;opacity:.7}
+#ldh{font-size:12px;color:#8a8f96;max-width:320px;line-height:1.6;min-height:2.4em;margin-top:6px}
+@keyframes ldd{0%,100%{opacity:.15}40%{opacity:1}}
+@keyframes ldf{0%,92%,96%{opacity:1}94%{opacity:.35}98%{opacity:.7}}
+@media(prefers-reduced-motion:reduce){#ldn,#ldt i{animation:none}#ldt i{opacity:1}}
+/* ---------- responsif: layar landscape pendek (HP) & layar sangat sempit */
+@media(max-height:480px){h1{font-size:clamp(36px,13vh,72px);margin:0}.ov{gap:8px}button{min-width:190px;padding:9px 20px;font-size:16px}#jn{font-size:16px}#msg{bottom:18%;font-size:clamp(14px,3vw,20px)}#cl{max-height:22vh}}
+@media(max-width:360px){button{min-width:0;width:100%;max-width:230px;letter-spacing:.08em}#pb,#vb,#fb{padding:6px 9px}}
+.lb{font-size:13px;letter-spacing:.2em;opacity:.7;margin-top:4px}.ck{display:flex;align-items:center;gap:10px;justify-content:center;font-size:15px;cursor:pointer;max-width:340px;text-align:left;margin:6px 0}.ck.hid{display:none}.ck input{width:22px;height:22px;min-width:22px;padding:0;margin:0;accent-color:var(--ac);flex:none}.cg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:340px}
+.cg button{min-width:0;padding:8px 10px;font-size:13px;letter-spacing:.05em}.cg button.on{border-color:var(--ac);color:var(--ac)}.cg .sw{width:36px;height:36px;padding:0}.cg .sw.on{outline:2px solid var(--ac);outline-offset:2px}
+#zv{height:clamp(110px,26vh,170px);width:auto}
+#mxg{margin:4px auto 16px}#mxg button{min-width:64px;font-size:18px;padding:10px 0}
+@media(max-height:480px){#cz{flex-direction:row;flex-wrap:wrap;align-content:center}#cz h2{width:100%;margin:0}}
+.sm{font-size:13px;opacity:.8}.wi{width:min(78vw,260px);font-size:16px}
+#ost{font-size:14px;letter-spacing:.08em}#ost.ok{color:#5fd16a}#ost.er{color:#e0544a}
+.rl{width:min(92vw,460px);display:flex;flex-direction:column;flex:none;gap:6px;max-height:34vh;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;box-sizing:border-box}.rl>*{flex:none}
+.ri{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;border:1px solid #556;padding:8px 10px;text-align:left}
+.rn{min-width:0}.rn b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rn small{opacity:.65;font-size:11px}
+.rc{font-size:15px}.rs{font-size:11px;letter-spacing:.05em}.rs.lb2{color:#5fd16a}.rs.pl{color:var(--ac)}.rs.fu{color:#e0544a}
+.ri button{min-width:0;padding:8px 12px;font-size:13px;letter-spacing:.05em}.ri button:disabled,button:disabled{opacity:.4}
+.re{opacity:.7;font-size:13px;padding:10px;line-height:1.5}
+.orow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.orow button{min-width:0;font-size:15px;padding:10px 16px}
+#ocf{display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid #556;padding:10px}
+@media(max-width:420px){.ri{grid-template-columns:1fr auto auto}.ri button{grid-column:1/-1}}
+.ri.pi{grid-template-columns:1fr auto}.ri.pi button{grid-column:auto;border-color:#e0544a;color:#e0544a}.ri.pi.me{border-color:var(--ac)}#mpl{margin:0 auto}#kc,#lc{z-index:9;background:rgba(0,0,0,.88)}#kc h2,#lc h2{color:#e0544a}#kcm,#lcm{max-width:340px;line-height:1.5}
+#hl{z-index:30;background:rgba(0,0,0,.93)}#hl h2{color:#e0544a}#rcb{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(8px + env(safe-area-inset-top,0px));background:rgba(64,0,0,.85);border:1px solid #e0544a;padding:6px 12px;font-size:13px;text-align:center;max-width:92vw;pointer-events:none}#hn{position:fixed;z-index:7;left:50%;transform:translateX(-50%);bottom:calc(70px + env(safe-area-inset-bottom,0px));background:rgba(0,0,0,.87);border:1px solid #889;padding:8px 12px;font-size:13px;text-align:center;max-width:90vw;pointer-events:none}
+
+/* ---------- menu MULTIPLAYER ONLINE: layout responsif (HP lanskap / portrait / tablet / PC) */
+#mo{overflow-x:hidden}.mob{display:contents}.mos{display:contents}.mrt{display:none;font-size:12px;opacity:.8;max-width:300px;line-height:1.4}
+#mo .mlb{order:0}#mo #pno,#mo #osq{order:0}#mo #olist{order:1}#mo .mr1{order:2}#mo #ocf{order:3}#mo .mr2{order:4}#mo #on{order:5}#mo #ob{order:6}
+#mo #on:empty{display:none}
+/* portrait di HP: tetap bisa dipakai (overlay bisa di-scroll) + saran memutar layar */
+@media(orientation:portrait) and (max-width:600px){#mo h2{font-size:clamp(16px,5.2vw,24px);max-width:100%;overflow-wrap:anywhere}#mo .mrt{display:block}#mo #olist{width:100%;max-width:460px;max-height:30vh}}
+@supports(height:1dvh){@media(orientation:portrait) and (max-width:600px){#mo #olist{max-height:30dvh}}}
+/* HP lanskap / layar pendek: dua kolom — kiri kontrol, kanan daftar server yang mengisi tinggi layar & scroll vertikal */
+@media(orientation:landscape) and (max-height:540px){
+ #mo{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:4px;height:100vh;height:100dvh;padding:calc(6px + var(--sat)) calc(12px + var(--sar)) calc(6px + var(--sab)) calc(12px + var(--sal));overflow:hidden;touch-action:none}
+ #mo.hid{display:none!important}
+ #mo h2{margin:0;font-size:clamp(15px,5.2vh,20px);letter-spacing:.08em;line-height:1.2;flex:none}
+ #mo #ost{font-size:12px;letter-spacing:.04em;flex:none;line-height:1.2}
+ #mo .mob{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:10px;flex:1 1 auto;min-height:0;width:100%;max-width:900px;margin:0 auto;text-align:left}
+ #mo .mos{display:flex;flex-direction:column;align-items:stretch;gap:5px;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:4px}
+ #mo .mos>*,#mo .mos .orow{order:0}
+ #mo .mos .lb{margin:0;font-size:11px;letter-spacing:.12em;text-align:left}
+ #mo .mos .wi,#mo .mos input[type=text],#mo .mos #oid{width:100%;box-sizing:border-box;font-size:16px;padding:6px 8px;min-height:36px;text-align:center}
+ #mo .mos .orow{flex-wrap:nowrap;gap:6px;justify-content:stretch}
+ #mo .mos .orow button{flex:1 1 0;min-width:0;min-height:40px;padding:6px 8px;font-size:13px;letter-spacing:.03em;white-space:normal;line-height:1.15}
+ #mo .mos .orow #oid{flex:0 0 72px;width:72px;min-width:0}
+ #mo #ocf{padding:6px;gap:5px;align-items:stretch}#mo #ocf .cg{max-width:none}#mo #ocf .cg button{min-height:36px;flex:1}#mo #ocf #ocg{min-height:40px;min-width:0;padding:6px 10px;font-size:14px}#mo #ocf .ck{font-size:12px;max-width:none;margin:2px 0}#mo #ocf .sm{font-size:11px;margin:0;max-width:none;line-height:1.3}
+ #mo #on{font-size:12px;margin:0;max-width:none;line-height:1.3}
+ #mo #olist{order:0;width:100%;max-width:none;max-height:none;height:100%;min-height:0;align-self:stretch;border:1px solid #334;padding:4px;gap:5px}
+ #mo .ri{padding:6px 8px;gap:6px}#mo .rn b{font-size:14px}#mo .rn small{font-size:10px}#mo .rc{font-size:14px}
+ #mo .ri button{min-height:40px;min-width:64px;padding:6px 10px;font-size:13px}
+ #mo .re{font-size:12px;padding:8px;text-align:center;margin:auto 0}
+ #mo #ob{flex:none;align-self:center;min-width:0;min-height:36px;padding:5px 24px;font-size:14px}
+}
+/* layar lanskap sangat pendek (<=340px) */
+@media(orientation:landscape) and (max-height:340px){#mo h2{font-size:14px}#mo .mos .lb{display:none}#mo .ri button,#mo .mos .orow button{min-height:36px}}
+/* lanskap sempit: daftar server lebih besar di kanan */
+@media(orientation:landscape) and (max-height:540px) and (max-width:620px){#mo .mob{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:6px}#mo .ri{grid-template-columns:1fr auto auto}#mo .ri button{grid-column:1/-1;min-height:38px}}
+</style>
+<script src="config.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script>window.Peer||document.write('<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"><\/script>')</script>
+</head><body>
+<div id="ld"><h1 id="ldn">BUS 14</h1><div id="ldr">RUTE 14 &gt; TERMINAL 0</div><div id="ldt"><span id="ldl">MEMUAT</span><i>.</i><i>.</i><i>.</i></div><div id="ldbar"><div id="ldb"></div></div><div id="ldp">0%</div><div id="ldh"></div></div>
+<script>setTimeout(function(){if(!window.THREE){var l=document.getElementById('ldl');if(l)l.textContent='GAGAL MEMUAT - PERIKSA INTERNET'}},12000)</script>
+<canvas id="c"></canvas>
+<div id="hud" class="hid"><div id="jn"></div><button id="pb">II</button><button id="vb">👁</button><button id="fb" title="Layar penuh">⛶</button><div id="msg"></div><div id="pr"></div><button id="eb">E</button><div id="js"><i id="jk"></i></div></div>
+<div id="fade"></div><div id="ttl"></div>
+<div id="menu" class="ov"><h1>BUS 14</h1><p id="best"></p><button id="bs">SINGLEPLAYER</button><button id="bp">MULTIPLAYER LAN</button><button id="bon">MULTIPLAYER ONLINE</button><button id="bh">CARA BERMAIN</button><button id="bo">PENGATURAN</button></div>
+<div id="how" class="ov hid"><p>Kamu terjebak di TERMINAL 0. Naiki bus dan periksa keadaannya dengan teliti.<br><br>Jika semuanya normal, tekan tombol di belakang kursi pengemudi.<br>Jika ada yang berbeda, keluar lewat pintu bus.<br><br>Salah menilai, kamu kembali ke Terminal 0. Sampai BUS 14 untuk keluar.<br><br>PC: WASD gerak, mouse melihat, E interaksi, F ganti sudut pandang (default: orang ketiga), ESC jeda.<br>HP: joystick kiri, geser layar kanan untuk melihat, tombol E, tombol 👁 ganti sudut pandang.</p><button class="bk">KEMBALI</button></div>
+<div id="set" class="ov hid"><label>Sensitivitas <input id="sn" type="range" min=".4" max="2.5" step=".1" value="1"></label><label>Tombol Chat <select id="ck"><option>T</option><option>C</option><option>V</option><option>Enter</option></select></label><label>Sudut Pandang <select id="vw"><option value="1">Orang ketiga</option><option value="0">Orang pertama</option></select></label><label>Volume <input id="vl" type="range" min="0" max="1" step=".05" value=".7"></label><label>Nama <input id="nm" maxlength="16" placeholder="Pemain" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:170px"></label><button id="bz">KUSTOMISASI KARAKTER</button><button class="bk">KEMBALI</button></div>
+<div id="cz" class="ov hid"><h2>KARAKTER</h2><svg id="zv" viewBox="0 -10 60 110"></svg><div class="lb">TOPI</div><div class="cg" id="zh"></div><div class="lb">WARNA BAJU</div><div class="cg" id="zs"></div><div class="lb">WARNA CELANA</div><div class="cg" id="zp"></div><div class="lb">KODE RAHASIA</div><div id="kr" style="display:flex;gap:6px;justify-content:center"><input id="kx" maxlength="24" placeholder="MASUKKAN KODE" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" style="width:190px"><button id="kb" style="min-width:0;padding:8px 14px;font-size:14px;letter-spacing:.05em">BUKA</button></div><div id="km" style="font-size:13px;min-height:1.3em;letter-spacing:.08em"></div><button id="zb">KEMBALI</button></div>
+<div id="pause" class="ov hid"><h2>JEDA</h2><label class="ck hid" id="phk" for="phd"><input type="checkbox" id="phd"><span>Sembunyikan Room dari List Server</span></label><p id="phs" class="sm"></p><button id="br">LANJUT</button><button id="bm">MENU UTAMA</button></div>
+<div id="mp" class="ov hid"><h2 id="mph">BUS 14 — MULTIPLAYER LAN</h2><div id="mpa"><p id="mlh" class="sm"></p><div class="lb">NAMA PEMAIN</div><input id="pnl" class="wi" maxlength="16" placeholder="Pemain" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="lb">MAKS PEMAIN (2-4)</div><div class="cg" id="mxg"><button data-n="2">2</button><button data-n="3">3</button><button data-n="4" class="on">4</button></div><button id="mc">BUAT ROOM</button><br><br><input id="mi" maxlength="4" placeholder="ID"> <button id="mj">GABUNG ROOM</button><div class="lb">SERVER LAN LOKAL (OPSIONAL)</div><input id="ma" class="wi" placeholder="192.168.1.5:3000" maxlength="80" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button id="mlr">CARI SESI LAN</button><div id="lanl" class="rl"></div><p id="mn"></p></div><div id="mr" class="hid"><p id="mid"></p><p id="ml"></p><div id="mpl" class="rl"></div><p id="mw" class="sm"></p><label class="ck hid" id="mhk" for="mhd"><input type="checkbox" id="mhd"><span>Sembunyikan Room dari List Server</span></label><p id="mhs" class="sm"></p><button id="mrdy">READY</button><button id="mst">MULAI</button></div><button id="mb">KEMBALI</button></div>
+<div id="lc" class="ov hid"><h2>KELUAR DARI ROOM?</h2><p id="lcm"></p><button id="lcy">YA — KELUAR</button><button id="lcn">BATAL</button></div>
+<div id="kc" class="ov hid"><h2>KELUARKAN PEMAIN?</h2><p id="kcm"></p><button id="kcy">YA — KELUARKAN</button><button id="kcn">BATAL</button></div>
+<div id="hl" class="ov hid"><h2 id="hlt"></h2><p id="hlm"></p><p id="hlc" class="sm"></p><button id="hlb">KEMBALI SEKARANG</button></div>
+<div id="rcb" class="hid"></div><div id="hn" class="hid"></div>
+<div id="mo" class="ov hid"><h2>BUS 14 — MULTIPLAYER ONLINE</h2><div id="ost"></div><p class="sm mrt">↻ Putar HP ke mode lanskap (horizontal) agar daftar server lebih luas.</p><div class="mob"><div class="mos"><div class="lb mlb">NAMA PEMAIN</div><input id="pno" class="wi" maxlength="16" placeholder="Pemain" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><input id="osq" class="wi" placeholder="CARI SERVER" maxlength="24" autocomplete="off" spellcheck="false"><div class="orow mr1"><button id="orf">REFRESH</button><button id="ocr">BUAT SERVER</button></div><div id="ocf" class="hid"><div class="lb">NAMA SERVER</div><input id="osn" class="wi" maxlength="24" autocomplete="off" spellcheck="false"><div class="lb">MAKS PEMAIN (2-4)</div><div class="cg" id="oxg"><button data-n="2">2</button><button data-n="3">3</button><button data-n="4" class="on">4</button></div><label class="ck" for="ohd"><input type="checkbox" id="ohd"><span>Sembunyikan Room dari List Server</span></label><p class="sm" id="ohn">Room tidak tampil di daftar/pencarian server. Pemain tetap bisa masuk lewat Room ID.</p><button id="ocg">BUAT</button></div><div class="orow mr2"><input id="oid" maxlength="4" placeholder="ID" autocomplete="off" spellcheck="false" autocapitalize="characters"><button id="ojn">GABUNG ID</button></div><p id="on" class="sm"></p></div><div id="olist" class="rl"></div></div><button id="ob">KEMBALI</button></div>
+<div id="vt" class="hid"><b id="vq"></b><div id="vbx"><button id="vy"></button><button id="vn"></button></div><small id="vs"></small></div>
+<button id="cb" class="hid">💬 CHAT</button>
+<div id="cp" class="hid"><div id="cl"></div><div id="cr"><input id="ci" maxlength="100" placeholder="Enter kirim · Esc tutup" autocomplete="off"><button id="cs">KIRIM</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=i=>document.getElementById(i),T=THREE,pad=n=>String(n).padStart(2,'0'),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+let touch=matchMedia('(pointer:coarse)').matches;
+let S={mode:'menu',n:1,tok:0,paused:0,sens:1,vol:.7,best:0,anom:null,lastA:-1,nn:0,lock:0,travel:0,arr:0,dopen:0,act:0,mute:0};
+try{S.best=+localStorage.getItem('b14')||0}catch(e){}
+S.tp=1;try{const v=localStorage.getItem('b14tp');if(v!=null)S.tp=+v?1:0}catch(e){}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const w=async ms=>{const t=S.tok;await wait(ms);while(S.paused)await wait(100);if(t!==S.tok)throw 0};
+const run=f=>{S.tok++;f().catch(e=>{if(e)console.error(e)})};
+// ---------- renderer
+const rd=new T.WebGLRenderer({canvas:$('c'),antialias:false});rd.setPixelRatio(Math.min(devicePixelRatio,1.5));
+const scene=new T.Scene(),cam=new T.PerspectiveCamera(70,1,.05,60);scene.fog=new T.FogExp2(0x05070a,.05);scene.add(cam);
+// ---------- layar penuh responsif: ukuran buffer = ukuran canvas yang benar-benar tampil (anti distorsi), aspek & FOV kamera mengikuti
+const SA={l:0,r:0,t:0,b:0};let VW=innerWidth,VH=innerHeight,rsq=0;
+function rs(){rsq=0;const c=$('c'),W=Math.max(1,c.clientWidth||innerWidth),H=Math.max(1,c.clientHeight||innerHeight),a=W/H;VW=W;VH=H;
+rd.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));rd.setSize(W,H,false);cam.aspect=a;cam.fov=a<1?Math.min(100,70+(1-a)*55):70;cam.updateProjectionMatrix();
+try{const cs=getComputedStyle(document.documentElement);SA.l=parseFloat(cs.getPropertyValue('--sal'))||0;SA.r=parseFloat(cs.getPropertyValue('--sar'))||0;SA.t=parseFloat(cs.getPropertyValue('--sat'))||0;SA.b=parseFloat(cs.getPropertyValue('--sab'))||0}catch(e){}}
+const rsl=()=>{if(!rsq)rsq=requestAnimationFrame(rs)};
+['resize','pageshow','fullscreenchange','webkitfullscreenchange'].forEach(e=>addEventListener(e,rsl));document.addEventListener('fullscreenchange',rsl);document.addEventListener('webkitfullscreenchange',rsl);
+addEventListener('orientationchange',()=>{rsl();setTimeout(rs,150);setTimeout(rs,500)}); // iOS/Android sering melaporkan ukuran lama sesaat setelah rotasi
+window.visualViewport&&visualViewport.addEventListener('resize',rsl);
+window.ResizeObserver&&new ResizeObserver(rsl).observe($('c'));
+rs();
+(function(){const b=$('fb'),de=document.documentElement,rq=de.requestFullscreen||de.webkitRequestFullscreen,ex=document.exitFullscreen||document.webkitExitFullscreen;if(!rq){b.style.display='none';return}
+b.onclick=()=>{try{(document.fullscreenElement||document.webkitFullscreenElement)?ex.call(document):rq.call(de)}catch(e){}}})();
+const hemi=new T.HemisphereLight(0x8899aa,0x111116,.5);scene.add(hemi);
+const pl=[-2.2,2.4].map(z=>{const l=new T.PointLight(0xe6ecff,.9,9);l.position.set(0,2.2,z);scene.add(l);return l});
+const M=(()=>{const c={};return(k,e)=>c[k+'|'+(e||0)]||(c[k+'|'+(e||0)]=new T.MeshLambertMaterial({color:k,emissive:e||0}))})();
+let bus=new T.Group(),R={};scene.add(bus);
+const B=(w,h,d,c,x,y,z,p,e)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),M(c,e));m.position.set(x,y,z);(p||bus).add(m);return m};window.B0=B;
+function tex(t,w,h,bg,fg,fs){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle=bg;g.fillRect(0,0,w,h);g.fillStyle=fg;g.font='bold '+fs+'px monospace';g.textAlign='center';g.textBaseline='middle';const a=t.split('\n');a.forEach((l,i)=>g.fillText(l,w/2,h/2+(i-(a.length-1)/2)*fs*1.25));return new T.CanvasTexture(c)}
+const P=(t,w,h,x,y,z,ry,p)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:t}));m.position.set(x,y,z);m.rotation.y=ry||0;(p||bus).add(m);return m};
+const setT=(m,...a)=>{m.material.map=tex(...a)};
+function clear(g){g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&o.material.map)o.material.map.dispose()});g.clear()}
+// ---------- bus interior
+function seat(x,z,c){const g=new T.Group();g.position.set(x,0,z);bus.add(g);B(.7,.15,.6,c,0,.45,0,g);B(.7,.65,.12,c,0,.85,.3,g);B(.1,.4,.1,0x333333,0,.2,0,g);return g}
+function person(c,x,z,ry){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=ry||0;bus.add(g);g.tor=B(.44,.6,.26,c,0,.95,.05,g);B(.4,.14,.5,0x1d2530,0,.56,-.2,g);B(.38,.45,.14,0x1d2530,0,.3,-.42,g);const h=new T.Mesh(new T.SphereGeometry(.14,8,8),M(0xd2a988));h.position.set(0,1.42,.05);g.add(h);B(.05,.05,.08,0xb98d6c,0,-.02,-.13,h);g.head=h;return g}
+function buildBus(){clear(bus);R={fx:[],t:0};const W=0x232830,I=Math.PI;
+B(2.6,.06,11,0x2a2c30,0,0,-.5);B(2.6,.06,11,0xc8ccd0,0,2.4,-.5);B(2.6,2.4,.1,0x1b1e24,0,1.2,5);B(2.6,.9,.1,W,0,.45,-6);B(2.6,.5,.1,W,0,2.15,-6);
+B(.1,.9,11,W,-1.3,.45,-.5);B(.1,.5,11,W,-1.3,2.15,-.5);B(.1,.5,11,W,1.3,2.15,-.5);
+[[-6,-4.2],[-2.8,3.8],[4.8,5]].forEach(([a,b])=>B(.1,.9,b-a,W,1.3,.45,(a+b)/2));
+const gm=new T.MeshBasicMaterial({color:0x1d2c36,transparent:true,opacity:.5,depthWrite:false});
+const gl=(x,a,b,ry)=>{const m=new T.Mesh(new T.PlaneGeometry(b-a,1),gm);m.position.set(x,1.4,(a+b)/2);m.rotation.y=ry;bus.add(m)};gl(-1.28,-6,5,I/2);gl(1.28,-2.8,3.8,-I/2);
+const door=(a,b)=>B(.06,1.85,b-a,0x26343f,1.3,.98,(a+b)/2,bus,0x0a1418);R.fd=door(-4.2,-2.8);R.rd=door(3.8,4.8);
+for(let z=-5;z<=4;z+=1.5){B(.08,1.1,.08,W,-1.27,1.45,z);if(z>-2.5&&z<3.5)B(.08,1.1,.08,W,1.27,1.45,z)}
+R.st=[[],[]];[-.85,.85].forEach((x,s)=>[-1.8,-.6,.6,1.8,3].forEach(z=>R.st[s].push(seat(x,z,0x2f4a78))));
+R.poles=[];[-.55,.55].forEach(x=>[-1.2,0,1.2,2.4].forEach(z=>R.poles.push(B(.04,2.1,.04,0xbcc2c8,x,1.05,z))));[-.55,.55].forEach(x=>B(.04,.04,9,0xbcc2c8,x,2.1,.5));
+R.ls=[-3.5,-1.2,1.1,3.4].map(z=>B(.4,.03,1.2,0xffffff,0,2.37,z,bus,0xdfe8ff));pl.forEach(l=>l.color.set(0xe6ecff));
+// driver cabin
+B(1.2,1.5,.06,W,.7,.75,-4.5);seat(.7,-5.2,0x222222);R.D=person(0x2a4a7a,.7,-5.2,0);B(1.4,.5,.4,0x111111,.5,.85,-5.8);
+const wh=new T.Mesh(new T.TorusGeometry(.16,.02,6,14),M(0x111111));wh.position.set(.7,1.1,-5.6);wh.rotation.x=1.1;bus.add(wh);
+B(.24,.32,.05,0x222222,.75,1.2,-4.46);R.btn=B(.1,.1,.06,0xcc2222,.75,1.2,-4.42,bus,0x660000);P(tex('TEKAN',128,32,'#222','#ddd',20),.24,.06,.75,1.42,-4.46,I);
+// passengers
+R.A=person(0x7a5a3a,-.85,-.6,0);R.bag=B(.3,.25,.12,0x8a3b2a,0,.8,-.34,R.A);
+R.Bp=person(0x3a5a6b,.85,.6,0);R.Bp.head.rotation.x=.5;B(.09,.16,.02,0x101010,0,.85,-.32,R.Bp);R.scr=B(.075,.14,.01,0x0a2a55,0,.85,-.335,R.Bp,0x1f6fff);
+// objects, ads
+R.bin=B(.35,.55,.35,0x3a4a3a,-1.05,.3,4.4);R.fbag=B(.4,.3,.2,0x555555,-.95,.18,-3.3);R.bottle=B(.07,.22,.07,0x44aa88,-.85,.64,1.8);
+R.ad1=P(tex('KOPI SENJA - HANGAT DI SETIAP TEGUKAN',512,100,'#e8d9a0','#3a2a10',26),1.6,.32,-1.24,2.15,-1.5,I/2);
+R.ad2=P(tex('BANK KOTA - TABUNG SEKARANG',512,100,'#2a6a8a','#fff',30),1.6,.32,1.24,2.15,2.2,-I/2);
+R.post=P(tex('AWAS COPET!\nJAGA BARANG ANDA',256,180,'#d9d2c0','#7a1a1a',26),1,.7,-.5,1.5,4.94,I);
+R.route=P(tex('RUTE 14 > TERMINAL 0',512,100,'#000','#ffb020',40),1.7,.32,0,2.15,-5.94);
+R.clk=P(tex('22:47',256,100,'#000','#40ff70',52),.6,.24,-.95,2.15,-5.94);R.num=P(tex('14',256,100,'#000','#ffb020',60),.6,.24,.95,2.15,-5.94);
+}
+// ---------- anomalies (each mutates R after buildBus)
+// ---------- ANOMALI PASIF / ATMOSFERIK (kosmetik: tidak menyerang, tidak mengejar, tidak membunuh)
+// Setiap anomali mendaftarkan updater per-frame lewat FX(); daftar R.fx dibuat ulang di buildBus() dan dijalankan di upd() (mode 'bus').
+const _v=new T.Vector3(),_d=new T.Vector3(),FX=f=>R.fx.push(f);
+const angL=(a,b,k)=>{let d=b-a;d=Math.atan2(Math.sin(d),Math.cos(d));return a+d*k};
+const lookDot=(x,y,z)=>{cam.getWorldDirection(_d);_v.set(x-cam.position.x,y-cam.position.y,z-cam.position.z).normalize();return _d.dot(_v)};
+// kontrol lampu kabin: k=1 normal, 0 mati
+function lampLv(k){const e=Math.min(k,1.2);pl.forEach(l=>l.intensity=.9*k);hemi.intensity=.5*(.12+.88*Math.min(k,1));
+R.ls.forEach(m=>{if(!m.own){m.material=m.material.clone();m.own=1}m.material.emissive.setHex(0xdfe8ff).multiplyScalar(e)})}
+function lampPlay(seq,cb){R.q={s:seq,i:0,t:0,cb};lampLv(seq[0][1]);
+if(!R.lq){R.lq=1;FX(dt=>{const q=R.q;if(!q)return;q.t+=dt;if(q.t>=q.s[q.i][0]){q.t=0;q.i++;if(q.i>=q.s.length){R.q=0;lampLv(1);q.cb&&q.cb();return}lampLv(q.s[q.i][1])}})}}
+const blink=fn=>{lampLv(0);fn();lampPlay([[.3,0],[.07,.8],[.1,.05]])}; // lampu mati sesaat, perubahan terjadi di dalam gelap
+// jalankan fn saat objek (x,y,z) tidak sedang dilihat pemain; kalau terlalu lama, paksa lewat kedipan lampu
+function trig(delay,wait,x,y,z,fn,early){let t=0,ok=0;FX(dt=>{if(ok)return;t+=dt;if(t<delay&&!(early&&early()))return;const away=lookDot(x,y,z)<.35;if(away||t>delay+wait){ok=1;away?fn():blink(fn)}})}
+// bisikan samar: noise ber-envelope suku kata, band-pass menyapu frekuensi, panning bergeser kiri-kanan
+function whisper(){if(!AC||S.mute)return;try{const d=1.8+Math.random()*1.6,sr=AC.sampleRate,n=sr*d|0,b=AC.createBuffer(1,n,sr),a=b.getChannelData(0),k=3+(Math.random()*4|0);
+for(let i=0;i<n;i++){const t=i/n;a[i]=(Math.random()*2-1)*Math.pow(Math.abs(Math.sin(Math.PI*t*k+1)),2)*Math.sin(Math.PI*t)}
+const s=AC.createBufferSource();s.buffer=b;const f=AC.createBiquadFilter();f.type='bandpass';f.Q.value=2.2;const t0=AC.currentTime;f.frequency.setValueAtTime(1800,t0);
+for(let j=1;j<=k*2;j++)f.frequency.linearRampToValueAtTime(1400+Math.random()*2400,t0+d*j/(k*2));
+const g=AC.createGain();g.gain.value=2.4;s.connect(f);f.connect(g);let o=g;
+if(AC.createStereoPanner){const p=AC.createStereoPanner(),sd=Math.random()<.5?-1:1;p.pan.setValueAtTime(sd*.9,t0);p.pan.linearRampToValueAtTime(-sd*.5,t0+d);g.connect(p);o=p}
+o.connect(mast);s.start();
+if(Math.random()<.35)try{const u=new SpeechSynthesisUtterance(['jangan menoleh','kamu melihatku','bukan bus empat belas','di belakangmu'][Math.random()*4|0]);u.lang='id-ID';u.volume=.1*S.vol;u.rate=.55;u.pitch=0;speechSynthesis.speak(u)}catch(e){}}catch(e){}}
+// penumpang berdiri (model berdiri, kaku, tangan lurus)
+function stander(c,x,z,ry,mt){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=ry;bus.add(g);
+const B=mt?(w,h,d,c,x,y,z,p)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),mt);m.position.set(x,y,z);(p||bus).add(m);return m}:window.B0;
+B(.16,.85,.16,0x1d2530,-.1,.43,0,g);B(.16,.85,.16,0x1d2530,.1,.43,0,g);B(.44,.62,.26,c,0,1.15,0,g);B(.09,.55,.09,c,-.27,1.12,0,g);B(.09,.55,.09,c,.27,1.12,0,g);
+const h=new T.Mesh(new T.SphereGeometry(.14,8,8),mt||M(0xd2a988));h.position.set(0,1.62,0);g.add(h);B(.26,.16,.26,0x15110e,0,.04,.04,h);B(.05,.05,.08,0xb98d6c,0,-.02,-.13,h);return g}
+// tekstur wajah pucat untuk pantulan kaca
+function faceTex(){const c=document.createElement('canvas');c.width=128;c.height=192;const g=c.getContext('2d');
+g.fillStyle='rgba(8,10,14,.85)';g.beginPath();g.ellipse(64,196,58,50,0,0,6.3);g.fill();
+const r=g.createRadialGradient(64,78,8,64,78,56);r.addColorStop(0,'rgba(215,225,235,.95)');r.addColorStop(.7,'rgba(150,165,180,.55)');r.addColorStop(1,'rgba(150,165,180,0)');
+g.fillStyle=r;g.beginPath();g.ellipse(64,78,34,46,0,0,6.3);g.fill();
+g.fillStyle='#05070a';[[50,70,7,10],[78,70,7,10],[64,108,8,16]].forEach(([x,y,a,b])=>{g.beginPath();g.ellipse(x,y,a,b,0,0,6.3);g.fill()});return new T.CanvasTexture(c)}
+// tekstur lantai bus (nyaris sama dengan warna lantai 0x2a2c30, dengan goresan samar) untuk anomali lantai menyamar
+function floorTex(){const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle='#2a2c30';g.fillRect(0,0,128,128);
+g.strokeStyle='#292b2f';g.lineWidth=2;for(let i=0;i<=128;i+=32){g.beginPath();g.moveTo(i,0);g.lineTo(i,128);g.stroke();g.beginPath();g.moveTo(0,i);g.lineTo(128,i);g.stroke()}
+g.strokeStyle='#2c2e32';g.lineWidth=1;for(let i=0;i<14;i++){const x=(i*37)%128,y=(i*53)%128;g.beginPath();g.moveTo(x,y);g.lineTo(x+14+(i%5)*5,y+((i%3)-1)*6);g.stroke()}return new T.CanvasTexture(c)}
+// penumpang A atau Bp (dipilih lewat RS() agar sama di semua pemain multiplayer)
+const pickP=()=>RS()<.5?R.A:R.Bp;
+// penumpang berdiri kaku di tempat yang tidak ia duduki; terjadi saat pemain tidak melihat (atau lewat kedipan lampu)
+function standUp(p,fx,fz,ry,delay){const sp=p.position;trig(delay,9,sp.x,1.2,sp.z,()=>{p.visible=false;stander(0x5a5060,fx,fz,ry)})}
+const AN=[
+()=>person(0x5c4a6b,.85,-1.8,0),
+()=>person(0x6b3a3a,-.85,3,Math.PI),
+()=>R.A.visible=false,
+()=>R.Bp.visible=false,
+()=>R.Bp.position.set(-.85,0,3),
+()=>R.A.rotation.y=Math.PI,
+()=>{R.Bp.position.set(.05,.45,-.9);R.Bp.rotation.y=Math.PI},
+()=>R.bag.visible=false,
+()=>B(.32,.26,.14,0x3a6a3a,.85,.66,3),
+()=>setT(R.ad1,'KOPI SENJA - HANGUS DI SETIAP TEGUKAN',512,100,'#e8d9a0','#3a2a10',26),
+()=>setT(R.post,'AWAS COPET!\nJANGAN MENOLEH',256,180,'#d9d2c0','#7a1a1a',26),
+()=>setT(R.clk,'03:33',256,100,'#000','#40ff70',52),
+()=>{R.fd.position.z-=1.3;noise(.6,500,.25)},
+()=>{const g=new T.Group(),m=new T.MeshBasicMaterial({color:0,transparent:true,opacity:.7}),b=new T.Mesh(new T.PlaneGeometry(.5,1.4),m),h=new T.Mesh(new T.CircleGeometry(.17,10),m);b.position.y=1.05;h.position.y=1.98;g.add(b,h);g.position.set(-1.26,0,1.4);g.rotation.y=Math.PI/2;bus.add(g)},
+()=>R.poles[RS()*8|0].visible=false,
+()=>{R.ls[1].material=M(0xd0ffd0,0x88ff99);pl[0].color.set(0xb0ffc0)},
+()=>R.D.tor.material=M(0x8a2a2a),
+()=>R.D.visible=false,
+()=>R.D.head.rotation.y=Math.PI,
+()=>setT(R.num,'41',256,100,'#000','#ffb020',60),
+()=>{const s=new T.Mesh(new T.SphereGeometry(.18,10,8),M(0xcc2222));s.position.set(0,2,1.6);bus.add(s);B(.006,.8,.006,0xffffff,0,1.5,1.6)},
+()=>[R.bin,R.fbag,R.bottle][RS()*3|0].visible=false,
+()=>R.scr.material=M(0x300000,0xff2020),
+()=>B(.5,.012,.4,0x0b1219,R.st[0][3].position.x,.535,R.st[0][3].position.z),
+()=>setT(R.route,'RUTE 14 > TIDAK ADA',512,100,'#000','#ffb020',40),
+()=>R.st[0][3].position.z+=.35,
+// [26] Penumpang menatap: kepala menoleh cepat ke pemain, badan menyusul pelan. Tidak mendekat, tidak menyerang.
+()=>{const p=pickP(),sp=p.position,hd=p.head;let a=p.rotation.y;if(p===R.Bp)R.scr.material=M(0x050505);
+[-.05,.05].forEach(x=>B(.035,.02,.02,0xffffff,x,.03,-.128,hd,0xdddddd));
+FX(dt=>{const dx=P0.x-sp.x,dz=P0.z-sp.z,tg=Math.atan2(-dx,-dz);a=angL(a,tg,Math.min(1,dt*1.4));p.rotation.y=a;
+let r=tg-a;r=Math.atan2(Math.sin(r),Math.cos(r));hd.rotation.y=cl(r,-1.3,1.3)+Math.sin(R.t*.9)*.015;hd.rotation.x=cl(Math.atan2(1.55-1.42,Math.hypot(dx,dz)),-.4,.4)})},
+// [27] Entitas hitam pekat berjalan bolak-balik di lorong belakang; mengabaikan pemain, memudar jika terlalu dekat
+()=>{const m=new T.MeshBasicMaterial({color:0,transparent:true,opacity:.97}),g=new T.Group(),bx=(w,h,d,x,y)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,0);g.add(o)};
+bx(.42,.8,.22,0,1.15);bx(.14,.8,.14,-.09,.4);bx(.14,.8,.14,.09,.4);bx(.08,.95,.08,-.27,1.08);bx(.08,.95,.08,.27,1.08);
+const h=new T.Mesh(new T.SphereGeometry(.13,8,8),m);h.position.set(0,1.78,-.04);g.add(h);bus.add(g);
+const Z0=2.4,Z1=4.6;let z=Z0+RS()*(Z1-Z0),dir=RS()<.5?1:-1,wt=0,ry=dir>0?Math.PI:0;g.position.set(0,0,z);
+FX(dt=>{if(wt>0){wt-=dt}else{z+=dir*.32*dt;if(z>Z1||z<Z0){z=cl(z,Z0,Z1);dir=-dir;wt=2+Math.random()*2.5}}
+ry=angL(ry,dir>0?Math.PI:0,Math.min(1,dt*1.2));g.position.set(0,Math.abs(Math.sin(R.t*3.2))*.012*(wt>0?0:1),z);g.rotation.set(0,ry,Math.sin(R.t*1.6)*.03);
+const d=Math.hypot(P0.x-g.position.x,P0.z-z);m.opacity=cl((d-.45)/.5,0,.97);g.visible=m.opacity>.02})},
+// [28] Penumpang tiba-tiba berdiri kaku menghadap jendela (saat pemain tidak melihat)
+()=>{const p=pickP();standUp(p,p.position.x<0?-.58:.58,p.position.z,p.position.x<0?Math.PI/2:-Math.PI/2,4+RS()*4)},
+// [29] Penumpang tiba-tiba berdiri kaku menghadap dinding belakang bus
+()=>{const p=pickP();standUp(p,-.5,4.4,Math.PI,4+RS()*4)},
+// [30] Penumpang bergeser perlahan, tanpa suara, ke kursi kosong terdekat dari pemain
+()=>{const p=pickP(),sp=p.position;let t=3+RS()*4,tg=null,x0=0,z0=0,u=0;
+FX(dt=>{if(!tg){t-=dt;if(t>0)return;const occ=[R.A,R.Bp],seats=[].concat(R.st[0],R.st[1]).filter(q=>!occ.some(o=>Math.hypot(o.position.x-q.position.x,o.position.z-q.position.z)<.3));
+seats.sort((a,b)=>Math.hypot(a.position.x-P0.x,a.position.z-P0.z)-Math.hypot(b.position.x-P0.x,b.position.z-P0.z));tg=seats[0].position;x0=sp.x;z0=sp.z;u=0;return}
+if(u<1){u=Math.min(1,u+dt/Math.max(2,Math.hypot(tg.x-x0,tg.z-z0)/.25));const e=u*u*(3-2*u);sp.x=x0+(tg.x-x0)*e;sp.z=z0+(tg.z-z0)*e}})},
+// [31] Halusinasi suara: bisikan samar dari arah acak
+()=>{let t=3+RS()*3;FX(dt=>{t-=dt;if(t<=0){whisper();t=7+Math.random()*7}})},
+// [32] Halusinasi visual: lampu berkedip dengan pola tidak wajar (lampu tidak pernah mati permanen)
+()=>{const P=[[[.07,.15],[.05,1],[.09,.1],[.06,.9],[.3,0],[.04,1.1],[.5,.25]],[[.5,.8],[.5,.55],[.6,.35],[.7,.2],[1.2,.12],[.05,1.2]],[[.12,.2],[.1,1],[.12,.2],[.1,1],[.9,.1]],[[1.8,0],[.05,1.2]]];
+let t=2+RS()*3;FX(dt=>{if(R.q)return;t-=dt;if(t>0)return;lampPlay(P[Math.random()*P.length|0]);noise(.04,2500,.05);t=4+Math.random()*6})},
+// [33] Halusinasi visual: wajah pucat muncul di pantulan kaca jendela saat pemain mendekat, lenyap jika ditatap langsung
+()=>{const sd=RS()<.5?-1:1,z=[-.3,.9,2.1][RS()*3|0],fm=new T.Mesh(new T.PlaneGeometry(.55,.82),new T.MeshBasicMaterial({map:faceTex(),transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide}));
+fm.position.set(sd*1.265,1.4,z);fm.rotation.y=-sd*Math.PI/2;bus.add(fm);let dw=0,hide=0;
+FX(dt=>{const d=Math.hypot(P0.x-fm.position.x,P0.z-z),n=cl((2.6-d)/1.4,0,1);
+if(lookDot(fm.position.x,1.4,z)>.93&&n>.4)dw+=dt;else dw=Math.max(0,dw-dt*.5);if(dw>1.4){hide=3;dw=0}hide=Math.max(0,hide-dt);
+const tg=hide>0?0:n*(.4+.2*Math.sin(R.t*1.3));fm.material.opacity+=(tg-fm.material.opacity)*Math.min(1,dt*(tg>0?2:8));fm.position.z=z+Math.sin(R.t*.5)*.03})},
+// [34] Kloning: bus tampak normal (supir sama, dua penumpang sama), tetapi penumpang kedua kini kembar identik dengan penumpang bertas (warna, tas, tanpa ponsel). Berubah saat pemain tidak melihat (atau lewat kedipan lampu).
+()=>{const A=R.A,b=R.Bp,sp=b.position;trig(3+RS()*4,9,sp.x,1.2,sp.z,()=>{
+b.tor.material=M(0x7a5a3a);b.head.rotation.set(0,0,0);R.scr.visible=false;
+b.children.forEach(o=>{if(o!==b.tor&&o!==b.head&&o.position.z<-.3&&o.position.y>.7&&o.position.y<1)o.visible=false});
+B(.3,.25,.12,0x8a3b2a,0,.8,-.34,b)})},
+// [35] Anggota tubuh berantakan: kepala, lengan, dan kaki penumpang/supir terlepas dan bergeser aneh dari badan; terjadi saat pemain tidak melihat. Pasif, hanya melayang pelan.
+()=>{const r=RS(),p=r<.4?R.A:r<.8?R.Bp:R.D,sp=p.position;trig(3+RS()*4,9,sp.x,1.2,sp.z,()=>{
+const c=p.tor.material.color.getHex(),ch=p.children,th=ch[1],sh=ch[2],hd=p.head,sg=RS()<.5?-1:1;
+hd.position.set(sg*.42,1.18,.14);hd.rotation.z=sg*.9;
+th.position.set(-sg*.45,.5,.1);th.rotation.z=-sg*.5;
+sh.position.set(sg*.3,.15,-.45);sh.rotation.x=.9;
+p.tor.rotation.z=sg*.12;
+const a1=B(.09,.55,.09,c,-sg*.62,1.35,.1,p),a2=B(.09,.55,.09,c,sg*.1,.55,.55,p);a1.rotation.z=sg*1.2;a2.rotation.x=1.3;
+FX(dt=>{a1.position.y=1.35+Math.sin(R.t*.8)*.03;a2.position.y=.55+Math.sin(R.t*.6+1)*.025;a1.rotation.z=sg*(1.2+Math.sin(R.t*.5)*.08);hd.rotation.z=sg*(.9+Math.sin(R.t*.7)*.05)})})},
+// [36] Lantai menyamar: segmen lantai dekat pintu belakang tampak normal. Saat pemain tidak melihat (atau menginjaknya, lalu berpaling), lantai berubah bentuk lalu perlahan berdiri (3 dtk) menjadi sosok kaku bertekstur lantai. Gerakan membeku selama ditatap; setelah berdiri sosok hanya diam. Pasif.
+()=>{const mt=new T.MeshLambertMaterial({map:floorTex()}),X=0,Z0=4.4,ZC=3.5,slab=new T.Mesh(new T.BoxGeometry(.6,.012,1.8),mt);
+slab.position.set(X,.034,ZC);bus.add(slab);let st=0,u=0,fg=null;
+const seen=()=>Math.max(lookDot(X,.3,2.9),lookDot(X,.3,3.7),lookDot(X,.9,Z0))>.78,
+stepped=()=>Math.abs(P0.x-X)<.45&&P0.z>2.6&&P0.z<Z0;
+trig(4+RS()*5,9,X,.05,ZC,()=>{st=1;slab.visible=false;fg=stander(0x2a2c30,X,Z0,0,mt);fg.rotation.x=-Math.PI/2;fg.scale.z=.06;fg.position.y=.04;noise(1.2,120,.08)},stepped);
+FX(dt=>{if(st!=1||!fg||seen())return;u=Math.min(1,u+dt/3);const sa=.3,a=cl(u/sa,0,1),b=cl((u-sa)/(1-sa),0,1),e=b*b*(3-2*b);
+fg.scale.z=.06+.94*a;fg.rotation.x=-Math.PI/2*(1-e);fg.position.y=(1-e)*(.04+.14*fg.scale.z);if(u>=1){st=2;fg.rotation.x=0;fg.position.y=0;fg.scale.z=1}})}];
+function genA(){const n=S.n==1||(S.nn<2&&Math.random()<.27);if(n){S.nn++;return -1}S.nn=0;let a;do{a=Math.random()*AN.length|0}while(a==S.lastA);S.lastA=a;return a}
+const RS=()=>(S.sd=(S.sd*1664525+1013904223)>>>0)/4294967296;
+function pick(){let a;if(S.mp)a=S.mpA;else{a=genA();S.sd=Date.now()&65535}S.anom=a<0?null:a;if(a>=0)AN[a]()}
+// ---------- terminal
+const term=new T.Group();scene.add(term);let sign,ext,tl;
+(function(){const p=term;B(40,.1,60,0x15181d,0,-.05,-15,p);B(40,.02,5,0x0c0d10,0,.02,-4.5,p);B(40,.02,.12,0xc9a227,0,.03,-2.2,p,0x332a00);term.roof=B(9,.2,6,0x2c323a,0,3.5,-1,p);term.b2=B(2,.1,.5,0x444a52,2.5,.5,1.2,p);
+[-4,4].forEach(x=>[-3.6,1.6].forEach(z=>B(.2,3.5,.2,0x2c323a,x,1.75,z,p)));[-2,0].forEach(z=>B(2.2,.05,.4,0xffffff,0,3.38,z,p,0xdde6ff));
+B(2,.1,.5,0x444a52,-2.5,.5,1.2,p);B(.1,.5,.1,0x333,-3.3,.25,1.2,p);B(.1,.5,.1,0x333,-1.7,.25,1.2,p);
+sign=P(tex('BUS 14 - MENUNGGU...',512,110,'#050505','#ffb020',40),3.4,.75,0,2.85,-2.4,0,p);
+tl=new T.PointLight(0xdfe8ff,1,14);tl.position.set(0,3,-1);scene.add(tl);
+ext=new T.Group();ext.position.set(-60,0,-4.5);scene.add(ext);B(10,2.6,2.6,0x2b4d7a,0,1.5,0,ext);B(8.6,.7,.02,0x9bb8c0,0,2.0,1.31,ext,0x4f6f75);ext.dr=B(1.2,1.7,.03,0x1d2b36,2.2,1.0,1.32,ext);
+[-.9,.9].forEach(z=>{const s=new T.Mesh(new T.SphereGeometry(.2,8,8),new T.MeshBasicMaterial({color:0xfff2c0}));s.position.set(5.05,.8,z);ext.add(s)});ext.lab=P(tex('BUS 01',256,100,'#000','#ffb020',60),1.2,.45,3,2.3,1.33,0,ext);const hl=new T.PointLight(0xfff2c0,1.6,16);hl.position.set(6,1,0);ext.add(hl);})();
+const lamps=new T.Group();scene.add(lamps);for(let i=0;i<12;i++){const s=i%2?4.5:-4.5;const m=new T.Mesh(new T.BoxGeometry(.3,.3,.3),new T.MeshBasicMaterial({color:0xffb050}));m.position.set(s,3.2,-24+Math.floor(i/2)*8);lamps.add(m)}
+const apt=new T.Group();scene.add(apt);(function(){B(14,10,6,0x3a3430,0,5,-16,apt);const wm=new T.MeshBasicMaterial({color:0xffd9a0}),dm=new T.MeshBasicMaterial({color:0x14181c}),cm=new T.MeshBasicMaterial({color:0x8a7550});
+for(let r=0;r<3;r++)for(let c=0;c<4;c++){const m=new T.Mesh(new T.PlaneGeometry(1.1,1.3),r==1&&c==2?wm:Math.sin(r*7+c*3)>.6?cm:dm);m.position.set(-4.5+c*3,3+r*2.8,-12.98);apt.add(m)}
+B(1.4,2.3,.1,0x4a2f20,0,1.15,-12.95,apt);P(tex('3B',128,64,'#4a2f20','#e8d9a0',34),.5,.25,0,2,-12.88,0,apt);B(2.2,.15,.9,0x555555,0,.08,-12.5,apt);B(.4,.6,.3,0x44556a,1.6,.35,-12.7,apt);
+apt.li=new T.PointLight(0xffd9a0,0,12);apt.li.position.set(0,2.6,-11);apt.add(apt.li)})();
+function setScene(k,end){const b=k=='b';apt.visible=!!end;apt.li.intensity=end?1.4:0;S.sc=k;bus.visible=b;lamps.visible=b;term.visible=!b;ext.visible=!b;pl.forEach(l=>l.intensity=b?.9:0);tl.intensity=b?0:1;hemi.intensity=b?.5:.35;const c=end?0x1c2b3a:b?0x05070a:0x070b12;scene.background=new T.Color(c);scene.fog.color.set(c)}
+// ---------- audio
+let AC,mast,hum;
+function audio(){if(AC)return;try{AC=new(window.AudioContext||webkitAudioContext)();mast=AC.createGain();mast.gain.value=S.vol;mast.connect(AC.destination);hum=AC.createGain();hum.gain.value=.03;hum.connect(mast);[55,110.6,82].forEach(f=>{const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=f;const l=AC.createBiquadFilter();l.frequency.value=180;o.connect(l);l.connect(hum);o.start()})}catch(e){AC=0}}
+function noise(d,f,v){if(!AC)return;const b=AC.createBuffer(1,AC.sampleRate*d,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=(Math.random()*2-1)*(1-i/a.length);const s=AC.createBufferSource();s.buffer=b;const fl=AC.createBiquadFilter();fl.type='highpass';fl.frequency.value=f;const g=AC.createGain();g.gain.value=v;s.connect(fl);fl.connect(g);g.connect(mast);s.start()}
+function beep(f,d){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.15;g.gain.linearRampToValueAtTime(0,AC.currentTime+d);o.connect(g);g.connect(mast);o.start();o.stop(AC.currentTime+d)}
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.volume=.25*S.vol;u.rate=.8;u.pitch=.6;speechSynthesis.speak(u)}catch(e){}}
+// ---------- flow
+const say=(t,ms)=>{const m=$('msg');m.textContent=t;m.style.opacity=1;clearTimeout(S.mt);S.mt=setTimeout(()=>m.style.opacity=0,ms||3500)};
+const fade=a=>$('fade').style.opacity=a,ttl=t=>{$('ttl').textContent=t||'';$('ttl').style.opacity=t?1:0};
+let P0={x:0,z:0},yaw=0,pitch=0,fy=0,pm='',tpk=9;
+const pal=[0x2c323a,0x3a2c2c,0x2c3a33,0x33304a,0x3a3a2a];
+async function goTerm(k,from,bid){S.mode='wait';S.mute=0;S.travel=0;S.arr=0;S.dep=0;S.dopen=0;S.busy=0;S.dx=-2.2;S.k=k;S.n=from?(bid==null?k:bid):k+1;document.body.classList.remove('gl');setScene('t');
+term.roof.material=M(pal[k%5]);term.b2.visible=k%2==1;tl.color.set([0xdfe8ff,0xffe2b0,0xc8ffe8][k%3]);
+setT(sign,'TERMINAL '+k+'\n'+(from?'BUS ':'MENUNGGU BUS ')+pad(S.n),512,110,'#050505','#ffb020',34);setT(ext.lab,'BUS '+pad(S.n),256,100,'#000','#ffb020',60);
+ext.visible=true;ext.dr.material=M(0x1d2b36);$('hud').classList.remove('hid');$('jn').textContent='TERMINAL '+k+(from?' · BUS '+pad(S.n):'');fade(1);yaw=0;pitch=0;
+if(from){ext.position.x=-2.2;ext.dr.material=M(0xfff2c0,0xfff2c0);P0=spawn(-2.3,0)}else{ext.position.x=-60;P0=spawn(1,0)}
+ttl('TERMINAL '+k);await w(2200);ttl('');await w(400);S.mode='term';fade(0);
+if(from){await w(3500);ext.dr.material=M(0x1d2b36);noise(1.2,2500,.25);say('Bus pergi meninggalkan terminal.',3000);await w(1500);S.dep=performance.now();noise(2.5,150,.3);await w(5500);S.dep=0;ext.position.x=-60;S.n=k+1;setT(ext.lab,'BUS '+pad(S.n),256,100,'#000','#ffb020',60);setT(sign,'TERMINAL '+k+'\nMENUNGGU BUS '+pad(S.n),512,110,'#050505','#ffb020',34);$('jn').textContent='TERMINAL '+k}
+say('Menunggu bus berikutnya...',5000);await w(3500);speak('Bus '+S.n+', akan segera tiba.');await w(1500);S.arr=performance.now();await w(7800);noise(1.2,3000,.25);await w(1200);S.dopen=1;ext.dr.material=M(0xfff2c0,0xfff2c0);noise(.5,600,.2);say('BUS '+pad(S.n),4000);$('jn').textContent='TERMINAL '+k+' · BUS '+pad(S.n);if(S.mp&&S.host){await w(4500);mpe({t:'board',a:genA(),sd:Date.now()&65535})}}
+async function board(){S.act=0;S.mode='wait';S.dopen=0;noise(.5,600,.2);fade(1);await w(1100);enterBus()}
+function enterBus(){S.mode='bus';setScene('b');buildBus();pick();P0=spawn(-3.4,.4);yaw=Math.PI;pitch=0;S.act=0;S.travel=0;S.done=0;S.busy=0;S.wrong=0;$('jn').textContent='BUS '+pad(S.n);
+try{if(S.n>S.best){S.best=S.n;localStorage.setItem('b14',S.n)}}catch(e){}fade(0);noise(.8,2500,.2);if(S.n==1)run2()}
+async function run2(){try{await w(500);say('Periksa keadaan bus.',3000);await w(3300);say('Jika normal, tekan tombol di belakang kursi pengemudi.',4000);await w(4200);say('Jika menemukan anomali, keluar dari bus.',4000)}catch(e){}}
+async function pressed(){S.act=0;if(S.anom!=null)S.wrong=1;S.busy=1;beep(880,.15);R.btn.position.z+=.03;await w(500);noise(.7,900,.3);await w(700);S.travel=1;noise(2,200,.3);await w(5000);S.travel=0;noise(1.4,3000,.3);await w(1300);noise(.5,600,.25);R.fd.position.z-=1.3;R.rd.position.z+=1;S.busy=0;S.done=1;say('Perjalanan selesai.',3500);if(S.mp){await w(3500);return exited()}}
+async function exited(){S.act=0;S.mode='wait';if(!S.done&&S.anom==null)S.wrong=1;fade(1);await w(1100);if(S.wrong){S.nn=0;return goTerm(0,1,S.n)}if(S.n>=14)return ending();goTerm(S.n,1)}
+const till=async(f,ms)=>{for(let i=0;i<ms/200&&!f();i++)await w(200)};
+async function ending(){S.mode='wait';fade(1);await w(1300);setScene('t',1);ext.visible=true;ext.position.x=-8;S.dx=-8;S.dep=0;S.arr=0;ext.dr.material=M(0xfff2c0,0xfff2c0);setT(sign,'TERMINAL 14\nBUS 14',512,110,'#050505','#9fd0ff',34);setT(ext.lab,'BUS 14',256,100,'#000','#ffb020',60);P0=spawn(-2.4,-5.8);yaw=0;pitch=0;$('jn').textContent='TERMINAL 14 · BUS 14';S.mode='end';S.mute=0;fade(0);noise(1.2,2500,.2);
+await w(5000);say('Kamu mengenal tempat ini.',4500);await till(()=>P0.z<-8.5,60000);await w(1500);await till(()=>Math.cos(yaw)<-.3,20000);await w(3000);S.dep=performance.now();noise(2.5,150,.3);await w(7500);S.dep=0;ext.visible=false;await till(()=>Math.cos(yaw)>.5,12000);await w(4000);S.mode='wait';fade(1);await w(2500);ttl('BUS 14\n\nPERJALANAN SELESAI');await w(6500);ttl('');toMenu()}
+function toMenu(){mpLeave();S.tok++;S.mode='menu';S.paused=0;document.body.classList.remove('gl');ttl('');$('hud').classList.add('hid');setScene('t');ext.visible=true;ext.position.x=-60;setT(sign,'TERMINAL 0\nMENUNGGU BUS 01',512,110,'#050505','#ffb020',34);fade(0);document.exitPointerLock&&document.exitPointerLock();['pause','how','set'].forEach(i=>$(i).classList.add('hid'));$('menu').classList.remove('hid');$('best').textContent=S.best?'Terjauh: BUS '+pad(S.best):''}
+// ---------- multiplayer (PeerJS: bintang/star, host-authoritative, tanpa API Claude)
+// Host membuat Peer dengan ID 'b14l-<KODE>' (LAN) atau 'b14o-<KODE>' (ONLINE); pemain lain connect ke host. Host merelay semua pesan & daftar pemain.
+// Tambahkan server TURN di iceServers jika ada pemain yang gagal terhubung (NAT ketat / jaringan seluler).
+const ICE={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}};
+// <<CLEANNAME — pembersih nama pemain: dipakai input, host (cl) & tampilan. Padanannya di server: cleanName() di server/rooms.js (harus sama).
+const NAME_MAX=16,NAME_DEF='Pemain';
+function cleanName(v,fb){let s;try{s=String(v==null?'':v)}catch(e){s=''}try{s=s.normalize('NFC')}catch(e){}
+s=s.replace(/\s+/g,' ').replace(/[^\p{L}\p{N} _.'-]/gu,'').replace(/ {2,}/g,' ').trim();s=Array.from(s).slice(0,NAME_MAX).join('').trim();return s||(fb===undefined?NAME_DEF:fb)}
+// CLEANNAME>>
+function peerOpts2(net){const o=Object.assign({},net&&net.peer||{}),x=(window.GAME_CONFIG||{}).ICE_SERVERS;o.config={iceServers:[...ICE.config.iceServers,...(Array.isArray(x)?x.filter(s=>s&&s.urls):[])]};return o}
+function mkRoom(code,isHost,init,ev,max,net){return new Promise((resolve,reject)=>{
+// Waktu (ms): SILENT = diam sebelum dicurigai putus; GRACE = masa tenggang guest menyambung ulang ke host;
+// AWAY = masa host menahan slot guest yang terputus; WD/RETRY = interval pengawas & percobaan sambung ulang.
+const MIG=!!(net&&net.mig); // HOST MIGRATION: hanya Multiplayer LAN (net.mig diset dari mpJoin). ONLINE tidak pernah mengaktifkan ini.
+const T=Object.assign({SILENT:8000,GRACE:MIG?5000:10000,AWAY:12000,WD:1000,RETRY:2000,HB:3000,ACK:2000,ELW:5000,LINKW:4000,ALIAS:4000},ev&&ev.T||{});
+const pid=((net&&net.prefix)||'b14l-')+code.toLowerCase(),R={_cur:null},M=new Map(),OK=['name','hat','sh','pn','rdy','g','t0','x','z','r','sc','mx','sn'];let cap=Math.min(4,Math.max(2,(+max|0)||4));
+const rnd=()=>{try{const a=new Uint32Array(4);crypto.getRandomValues(a);return[...a].map(x=>x.toString(36)).join('')}catch(e){return Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Date.now().toString(36)}};
+let sid=isHost?rnd():null;const BAN=new Set(),BANRT=new Set(); // BAN/BANRT (host): ID peer & token sambung-ulang pemain yang di-kick, berlaku selama room ini hidup
+let peer,myId=null,hc=null,pres={...init},dirty=0,dead=0,done=0,lastRx=Date.now(),onM=null,onP=null,to=0,hb=0,fl=0,wd=0,hsid=null,rt=rnd(),recon=0,rcAt=0,rcTry=0,left=0;
+// --- HOST MIGRATION (LAN): term = nomor masa jabatan host (naik tiap migrasi); hostId = peer host sekarang; links = koneksi langsung antar-guest (jalur kontrol pemilihan);
+// pro = janji (promise) ke satu koordinator per term; el = pemilihan yang sedang berjalan; gdead = peer yang tidak boleh dipilih (host lama / calon yang gagal)
+let term=0,hostId=null,pro={t:0,co:null},el=null,lastRoster=[],bsnap={i:[],r:[]},migP=0,aborts=0,ap=null,apT=0,psid=null;const links=new Map(),gdead=new Set(),former=new Set();
+const cl=p=>{const o={};if(p&&typeof p=='object')for(const k of OK)if(k in p){const v=p[k];o[k]=k=='name'?cleanName(v,''):k=='sn'?String(v).replace(/[<>\u0000-\u001f]/g,'').slice(0,24):k=='hat'?Math.max(0,Math.min(8,+v|0)):k=='sh'?Math.max(0,Math.min(11,+v|0)):k=='pn'?Math.max(0,Math.min(10,+v|0)):k=='mx'?Math.min(4,Math.max(2,(+v|0)||4)):(k=='x'||k=='z'||k=='r')?Math.max(-500,Math.min(500,+v||0)):(k=='rdy'||k=='g')?(v?1:0):k=='t0'?(+v||0):k=='sc'?String(v).slice(0,2):v}if(!o.name)delete o.name;return o};
+// entri pemain BARU: nama selalu ada (default 'Pemain'); mx/sn hanya boleh dari host
+const np=p=>{const q=cl(p);delete q.mx;delete q.sn;if(!q.name)q.name=NAME_DEF;return q};
+const kill=()=>{clearTimeout(apT);try{ap&&ap.destroy()}catch(e){}ap=null;links.forEach(l=>{try{l.c.close()}catch(e){}});links.clear();try{peer&&peer.destroy()}catch(e){}};
+const stop=d=>{dead=1;clearTimeout(to);clearInterval(hb);clearInterval(fl);clearInterval(wd);if(d)setTimeout(kill,d);else kill()};
+const fail=e=>{if(done||dead)return;done=1;stop();reject(e)};
+// lost: sesi berakhir untuk guest. why: 'bye' (host keluar), 'timeout' (host tak terjangkau), 'stale'/'started'/'full' (ditolak), 'lost'
+const lost=why=>{if(dead)return;if(!done){fail({type:'closed'});return}stop();ev.close&&ev.close(why||'lost')};
+const view=l=>({peers:l.map(x=>({peer:x.peer,presence:x.presence,away:x.away?1:0,isMe:x.peer==myId,sameTab:x.peer==myId}))});
+const push=l=>{R._cur=view(l);if(onP)onP(R._cur)};
+const hlist=()=>[...M].map(([id,m])=>({peer:id,presence:m.p,away:m.aw?1:0}));
+const pk=l=>{const o={k:'peers',l,sid};if(MIG&&(BAN.size||BANRT.size))o.bn={i:[...BAN].slice(0,24),r:[...BANRT].slice(0,24)};return o};
+const bc=o=>M.forEach((m,id)=>{if(m.c)try{m.c.send(o)}catch(e){}});
+const deliver=(f,d)=>{if(onM)onM({peer:f,data:d});bc({k:'m',f,d})};
+// --- sisi HOST: guest yang koneksinya putus ditahan sebentar (AWAY) agar bisa menyambung ulang; 'bye' = keluar sengaja, langsung dihapus
+const gone=c=>{const m=M.get(c.peer);if(!m||m.c!==c)return;m.c=null;try{c.close()}catch(e){}if(m.bye)M.delete(c.peer);else m.aw=Date.now();dirty=1};
+const refuse=(c,r)=>{try{c.send({k:'no',r})}catch(e){}setTimeout(()=>{try{c.close()}catch(e){}},600)};
+const hdata=(c,d)=>{if(!d||dead||typeof d!='object')return;try{if(JSON.stringify(d).length>1500)return}catch(e){return}const id=c.peer;
+if(d.k=='hi'){if(BAN.has(id)||(typeof d.rt=='string'&&BANRT.has(d.rt.slice(0,64))))return refuse(c,'kicked');const old=M.get(id);
+if(old){ // sambung ulang: hanya pemilik token yang sama & sesi (sid) yang sama
+if(old.rt&&d.rt===old.rt&&d.sid===sid){if(old.c&&old.c!==c){const oc=old.c;old.c=null;try{oc.close()}catch(e){}}old.c=c;old.aw=0;old.t=Date.now();if(MIG&&d.p){const q=cl(d.p);delete q.mx;delete q.sn;Object.assign(old.p,q)}dirty=1;try{c.send(pk(hlist()))}catch(e){}ev.up&&ev.up(id)}else refuse(c,'stale');return}
+if(MIG&&psid&&former.has(id)&&d.sid===psid&&typeof d.rt=='string'&&M.size<cap){const q=np(d.p);M.set(id,{c,p:q,t:Date.now(),w:0,q:0,rt:d.rt.slice(0,64),aw:0});dirty=1;try{c.send(pk(hlist()))}catch(e){}ev.up&&ev.up(id);return} // mantan anggota yang tidak sempat ikut pemilihan
+if(d.rt&&d.sid)return refuse(c,'stale'); // dulu pemain, kini sudah dikeluarkan/sesi berbeda
+const why=M.size>=cap?'full':ev.can&&ev.can();if(why)return refuse(c,why);const q=np(d.p);M.set(id,{c,p:q,t:Date.now(),w:0,q:0,rt:typeof d.rt=='string'?d.rt.slice(0,64):null,aw:0});dirty=1;return}
+const m=M.get(id);if(!m||m.c!==c)return;m.t=Date.now();
+if(d.k=='bye'){m.bye=1;gone(c);return} // keluar sengaja: hanya untuk koneksi pengirim sendiri (m dicari dari c.peer & harus m.c===c); tidak dibatasi laju agar tidak jadi ghost
+if(m.t-(m.w||0)>1000){m.w=m.t;m.q=0}if(++m.q>60)return;
+if(d.k=='p'){const q=cl(d.p);delete q.mx;delete q.sn;Object.assign(m.p,q);dirty=1}else if(d.k=='e'&&d.n=='b14'&&d.d&&typeof d.d=='object'&&['chat','req','cast'].includes(d.d.t))deliver(id,d.d)};
+// ===== HOST MIGRATION (hanya LAN; MIG=false di ONLINE sehingga semua blok ini tidak pernah jalan) =====
+// Koneksi masuk: di host = guest yang bergabung/menyambung; di guest (MIG) = tautan langsung antar-guest (jalur kontrol pemilihan).
+const onConn=c=>{if(isHost){c.on('data',d=>hdata(c,d));c.on('close',()=>gone(c));c.on('error',()=>gone(c))}else if(MIG&&!dead)addLink(c)};
+const gsend=(c,o)=>{try{c.send(o)}catch(e){}};
+const rosterIds=()=>lastRoster.map(x=>x&&x.peer).filter(x=>typeof x=='string');
+const rpick=n=>{try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n}catch(e){return Math.floor(Math.random()*n)}};
+const addLink=c=>{const id=c.peer;if(typeof id!='string'||links.size>8&&!links.has(id)){try{c.close()}catch(e){}return}
+const o=links.get(id);if(o&&o.c!==c)try{o.c.close()}catch(e){}
+const l={c,lx:Date.now(),t0:Date.now()};links.set(id,l);
+c.on('open',()=>{l.lx=Date.now()});c.on('data',d=>{if(links.get(id)===l)gmsg(id,d,l)});
+const gone2=()=>{if(links.get(id)===l)links.delete(id)};c.on('close',gone2);c.on('error',gone2)};
+// pastikan ada tautan ke semua guest lain (yang ber-ID lebih kecil menyambung; force=1 saat pemilihan: semua menyambung)
+const meshSync=force=>{if(!MIG||isHost||dead||!peer||!myId||peer.destroyed)return;const ids=rosterIds();
+ids.forEach(id=>{if(id===myId||id===hostId||gdead.has(id)||links.has(id))return;if(force||myId<id){try{const c=peer.connect(id,{reliable:true,serialization:'json'});if(c)addLink(c)}catch(e){}}});
+[...links].forEach(([id,l])=>{if(!ids.includes(id)&&ids.length&&!el){links.delete(id);try{l.c.close()}catch(e){}}})};
+const meshTick=t=>{meshSync();links.forEach((l,id)=>{if(!l.c.open&&t-l.t0>6000){links.delete(id);try{l.c.close()}catch(e){}}})};
+const lfresh=(id,t)=>{const l=links.get(id);return !!(l&&l.c.open&&t-l.lx<=T.SILENT+T.HB)};
+// pemain aktif = saya + guest di roster (bukan host/mati) dengan tautan langsung yang segar
+const aliveSet=t=>{const ids=rosterIds(),a=[myId];links.forEach((l,id)=>{if(id!==hostId&&!gdead.has(id)&&!(el&&el.dead.has(id))&&ids.includes(id)&&lfresh(id,t))a.push(id)});return a.sort()};
+const gmsg=(id,d,l)=>{if(!d||typeof d!='object'||d.k!='g'||dead)return;l.lx=Date.now();
+if(d.t=='bye'){gdead.add(id);links.delete(id);try{l.c.close()}catch(e){}return}
+if(isHost||id===hostId||!rosterIds().includes(id)||gdead.has(id))return;
+if(d.t=='prep')onPrep(id,d,l);else if(d.t=='ack')onAck(id,d);else if(d.t=='nack')onNack(id,d);else if(d.t=='commit')onCommit(id,d)};
+const nackInfo=(l,d,why)=>gsend(l.c,{k:'g',t:'nack',term:d.term,why,tm:term,th:hostId,sid:hsid});
+// mulai pemilihan (guest): host dianggap hilang. bye=1 -> host menyatakan keluar (tanpa masa tenggang)
+const startEl=bye=>{if(!MIG||isHost||dead||!done||el)return;
+el={t0:Date.now(),lc:Date.now(),co:0,T:0,ack:null,nk:new Map(),dead:new Set(),bye:!!bye,tries:0};
+if(hostId)gdead.add(hostId);if(hc){const o=hc;hc=null;try{o.close()}catch(e){}}recon=0;
+ev.state&&ev.state('elect');meshSync(1)};
+const abortEl=()=>{el=null;aborts++;if(aborts>=2){lost('timeout');return}recon=1;rcAt=Date.now();rcTry=0;if(hostId)gdead.delete(hostId);ev.state&&ev.state('recon',{ms:T.GRACE})};
+const etick=t=>{const a=aliveSet(t),co=a[0];
+if(co!==myId){ // ada guest ber-ID lebih kecil yang aktif: tunggu prep/commit-nya; bila diam terlalu lama dianggap mati
+el.co=0;if(t-el.lc>T.ELW){el.dead.add(co);el.lc=t}return}
+if(!el.co){ // saya koordinator. Tunggu sebentar bila ada anggota roster yang tautannya belum terbentuk (agar tidak salah mengira sendirian)
+const ids=rosterIds(),miss=ids.filter(id=>id!==myId&&id!==hostId&&!gdead.has(id)&&!el.dead.has(id)&&!links.has(id));
+if(miss.length&&t-el.t0<T.LINKW){meshSync(1);return}
+if(peer.disconnected){if(t-el.t0<12000){try{peer.reconnect()}catch(e){}return}lost('timeout');return} // signaling saya putus: mungkin saya yang terisolasi; host baru wajib bisa menerima sambungan baru, jadi coba pulihkan dulu, lalu menyerah
+el.co=1;el.T=Math.max(term,pro.t)+1;pro={t:el.T,co:myId};el.ack=new Map([[myId,{rt,p:cl(pres)}]]);el.nk=new Map();el.sa=t;el.tries=1;
+a.forEach(id=>{if(id!==myId)gsend(links.get(id).c,{k:'g',t:'prep',term:el.T,hg:el.bye?1:0})});
+if(a.length==1)decide();return}
+const wait=a.filter(id=>!el.ack.has(id));
+if(wait.length&&t-el.sa<=T.ACK)return;
+if(wait.some(id=>el.nk.has(id))&&el.tries<3){el.tries++;el.sa=t;el.nk.clear();wait.forEach(id=>{const l=links.get(id);if(l)gsend(l.c,{k:'g',t:'prep',term:el.T,hg:el.bye?1:0})});return}
+if(el.nk.size&&el.ack.size==1&&a.length>1){abortEl();return} // semua yang lain bilang host masih hidup: kemungkinan hanya saya yang terputus
+decide()};
+// koordinator memilih SATU pemenang secara acak dari yang benar-benar menjawab (ack), lalu mengumumkan ke semuanya
+const decide=()=>{const mem=[...el.ack.keys()].sort(),w=(ev.pick&&ev.pick(mem.slice()))||mem[rpick(mem.length)],nsid=rnd(),L=mem.map(id=>({id,rt:el.ack.get(id).rt,p:el.ack.get(id).p})),T2=el.T;
+mem.forEach(id=>{if(id!==myId){const l=links.get(id);if(l)gsend(l.c,{k:'g',t:'commit',term:T2,host:w,sid:nsid,mem:L,bn:bsnap})}});apply(T2,w,nsid,L,bsnap)};
+const onPrep=(id,d,l)=>{const t=Date.now();if(typeof d.term!='number')return;
+if(!(d.term>term))return nackInfo(l,d,'old');
+const lostView=recon||el||d.hg||t-lastRx>T.HB+1500;
+if(!lostView)return nackInfo(l,d,'hostok'); // saya masih menerima heartbeat host: penelepon yang terputus, bukan host
+if(!el)startEl(d.hg);if(!el)return;
+const better=d.term>pro.t||(d.term==pro.t&&(pro.co==id||id<pro.co));
+if(el.co&&id>myId&&d.term<=pro.t)return gsend(l.c,{k:'g',t:'nack',term:d.term,why:'lower'}); // ID terkecil menang
+if(!better)return gsend(l.c,{k:'g',t:'nack',term:d.term,why:'busy'});
+if(el.co){el.co=0}pro={t:d.term,co:id};el.lc=t;gsend(l.c,{k:'g',t:'ack',term:d.term,rt,p:cl(pres)})};
+const onAck=(id,d)=>{if(!el||!el.co||d.term!==el.T||!el.ack)return;el.ack.set(id,{rt:String(d.rt||'').slice(0,64),p:cl(d.p)})};
+const onNack=(id,d)=>{if(typeof d.tm=='number'&&d.tm>term&&typeof d.th=='string'&&typeof d.sid=='string'&&d.th!==myId&&rosterIds().includes(d.th)){ // pemilihan sudah selesai tanpa saya: ikut host baru
+apply(d.tm,d.th,d.sid,null,null);return}
+if(el&&el.co&&d.term===el.T&&d.why=='hostok')el.nk.set(id,1)};
+const onCommit=(id,d)=>{if(!el||typeof d.term!='number'||!(d.term>term)||pro.t!==d.term||pro.co!==id||typeof d.host!='string'||typeof d.sid!='string'||!Array.isArray(d.mem))return;
+const mem=d.mem.slice(0,4).filter(x=>x&&typeof x.id=='string').map(x=>({id:x.id,rt:String(x.rt||'').slice(0,64),p:x.p}));
+if(!mem.some(x=>x.id==d.host)||!mem.some(x=>x.id==myId))return;apply(d.term,d.host,d.sid,mem,d.bn)};
+// terapkan hasil pemilihan: saya jadi host, atau menyambung ke host baru
+const apply=(tm,host,nsid,mem,bn)=>{term=tm;if(pro.t<tm)pro={t:tm,co:pro.co};el=null;recon=0;aborts=0;
+lastRoster.forEach(x=>{if(x&&typeof x.peer=='string')former.add(x.peer)});psid=hsid;
+if(hostId&&hostId!==myId)gdead.add(hostId);
+if(bn&&Array.isArray(bn.i)&&Array.isArray(bn.r))bsnap={i:bn.i.slice(0,24).map(String),r:bn.r.slice(0,24).map(String)};
+if(host===myId){becomeHost(mem||[],nsid);return}
+hostId=host;hsid=nsid;migP=1;if(hc){const o=hc;hc=null;try{o.close()}catch(e){}}
+recon=1;rcAt=Date.now();rcTry=0;lastRx=Date.now();ev.state&&ev.state('recon',{ms:T.GRACE,mig:1});connectHost()};
+// saya terpilih: ambil alih kewenangan host. Daftar pemain dibangun ulang dari anggota yang ikut pemilihan; mereka menyambung ke saya dengan token sambung-ulang miliknya.
+const becomeHost=(mem,nsid)=>{isHost=true;sid=nsid;hostId=myId;recon=0;el=null;migP=0;
+const H0=lastRoster.find(x=>x&&x.presence&&x.presence.host);if(H0){cap=Math.min(4,Math.max(2,(+H0.presence.mx|0)||4));if(H0.presence.sn)pres.sn=String(H0.presence.sn).slice(0,24)}
+pres.host=1;pres.mx=cap;M.clear();M.set(myId,{c:null,p:pres,t:0});const now=Date.now();
+mem.forEach(x=>{if(x.id===myId)return;const q=np(x.p);M.set(x.id,{c:null,p:q,t:now,w:0,q:0,rt:x.rt||null,aw:now})});
+bsnap.i.forEach(i=>BAN.add(i));bsnap.r.forEach(r=>BANRT.add(r));
+R.isHost=true;dirty=1;ev.state&&ev.state('ok');ev.host&&ev.host({term,members:[...M.keys()]});push(hlist());claimAlias()};
+// ambil kembali Room ID asli (b14l-KODE) lewat peer kedua supaya pemain baru tetap bisa bergabung dengan kode yang sama; ID itu baru bebas setelah signaling melepas host lama, jadi dicoba berulang
+const claimAlias=()=>{if(!MIG||dead||!isHost||ap||pid===myId)return;try{const a=new Peer(pid,peerOpts2(net));ap=a;a.on('connection',onConn);
+a.on('disconnected',()=>{if(!dead&&ap===a)try{a.reconnect()}catch(e){}});
+a.on('error',()=>{if(ap!==a)return;try{a.destroy()}catch(e){}ap=null;if(!dead&&isHost)apT=setTimeout(claimAlias,T.ALIAS)})}catch(e){}};
+// --- sisi GUEST
+const cdata=d=>{if(!d||dead||typeof d!='object')return;lastRx=Date.now();
+if(d.k=='no'){if(done)lost(d.r||'lost');else fail({type:d.r});return}
+if(d.k=='bye'){if(MIG){startEl(1);return}left=1;lost('bye');return} // LAN: host keluar -> pemilihan host baru; ONLINE: sesi berakhir seperti semula
+if(d.k=='kick'){left=1;lost('kick');return} // hanya datang lewat koneksi ke host (hc===c); guest tidak punya jalur untuk mengirim 'kick' ke guest lain
+if(d.k=='peers'){if(typeof d.sid=='string')hsid=d.sid;if(MIG&&Array.isArray(d.l)){lastRoster=d.l;const H=d.l.find(x=>x&&x.presence&&x.presence.host);if(H)hostId=H.peer;if(d.bn&&Array.isArray(d.bn.i)&&Array.isArray(d.bn.r))bsnap={i:d.bn.i.slice(0,24).map(String),r:d.bn.r.slice(0,24).map(String)};aborts=0}push(d.l);if(recon){recon=0;ev.state&&ev.state('ok')}if(!done){done=1;clearTimeout(to);resolve(R)}if(MIG&&migP){migP=0;ev.mig&&ev.mig('done',{host:hostId,term})}if(MIG)meshSync()}else if(d.k=='m'&&onM)onM({peer:d.f,data:d.d})};
+const suspect=()=>{if(dead||left||el)return;if(!done){fail({type:'closed'});return}if(!recon){recon=1;rcAt=Date.now();rcTry=0;ev.state&&ev.state('recon',{ms:T.GRACE})}};
+const connectHost=()=>{try{if(hc)try{hc.close()}catch(e){}const c=peer.connect(hostId||pid,{reliable:true,serialization:'json'});if(!c)return;hc=c;
+c.on('open',()=>{if(hc===c)try{c.send({k:'hi',p:pres,rt,sid:hsid})}catch(e){}});c.on('data',d=>{if(hc===c)cdata(d)});c.on('close',()=>{if(hc===c)suspect()});c.on('error',()=>{if(hc===c)suspect()})}catch(e){}};
+// flush daftar pemain (host)
+fl=setInterval(()=>{if(isHost&&dirty&&!dead){dirty=0;const l=hlist();bc(pk(l));push(l)}},80);
+// heartbeat: host -> guest ('hb') dan guest -> host ('ping'); host membuang guest yang diam
+hb=setInterval(()=>{if(dead)return;const t=Date.now();
+if(isHost){dirty=1;bc({k:'hb',sid});M.forEach((m,id)=>{if(m.c&&t-m.t>T.SILENT+T.HB)gone(m.c);else if(m.aw&&t-m.aw>T.AWAY){M.delete(id);dirty=1}})}
+else{try{hc&&hc.open&&hc.send({k:'ping'})}catch(e){}if(MIG)links.forEach(l=>{if(l.c.open)gsend(l.c,{k:'g',t:'hb'})})}},T.HB);
+// pengawas guest: deteksi diam -> status sambung ulang -> masa tenggang habis = sesi berakhir
+wd=setInterval(()=>{if(dead||isHost||!done)return;const t=Date.now();
+if(MIG){meshTick(t);if(el){etick(t);return}}
+if(!recon){if(t-lastRx>T.SILENT)suspect();return}
+if(t-rcAt>T.GRACE){if(MIG)startEl(0);else lost('timeout');return}
+if(t-rcTry>=T.RETRY){rcTry=t;if(peer.disconnected||peer.open===false){try{peer.reconnect()}catch(e){}return}connectHost()}},T.WD);
+R.on=(n,f)=>{if(n=='b14')onM=f};
+R.onPeers=f=>{onP=f;if(R._cur)f(R._cur)};
+R.presence=o=>{Object.assign(pres,cl(o));if(isHost)dirty=1;else if(hc&&hc.open&&!recon)try{hc.send({k:'p',p:cl(pres)})}catch(e){}return Promise.resolve()};
+R.emit=(n,d)=>{if(!dead){if(isHost)deliver(myId,d);else if(hc&&hc.open)try{hc.send({k:'e',n,d})}catch(e){}}return Promise.resolve()};
+// leave: host mengirim 'bye' ke semua guest (sesi berakhir); guest mengirim 'bye' ke host. now=1 -> tanpa jeda (penutupan tab)
+R.leave=now=>{if(dead)return;if(isHost)bc({k:'bye',sid});else{if(hc&&hc.open)try{hc.send({k:'bye'})}catch(e){}if(MIG)links.forEach(l=>{if(l.c.open)gsend(l.c,{k:'g',t:'bye'})})}stop(now?0:250)};
+// kick (HANYA host; ditegakkan di sini, bukan hanya di UI): target harus anggota room & bukan host sendiri. Pesan 'kick' dari guest tidak pernah diproses oleh hdata.
+R.kick=id=>{if(!isHost||dead||typeof id!='string'||id===myId)return false;const m=M.get(id);if(!m)return false;
+BAN.add(id);if(m.rt)BANRT.add(m.rt);M.delete(id);dirty=1;const c=m.c;
+if(c){try{c.send({k:'kick'})}catch(e){}setTimeout(()=>{try{c.close()}catch(e){}},600)}return true};
+R.isHost=isHost;R.info=()=>({isHost,term,hostId,myId,sid});
+to=setTimeout(()=>fail({type:'timeout'}),15000);
+try{
+if(isHost){
+pres.mx=cap;peer=new Peer(pid,peerOpts2(net));
+peer.on('open',id=>{myId=id;M.set(id,{c:null,p:pres,t:0});push(hlist());if(!done){done=1;clearTimeout(to);resolve(R)}});
+peer.on('connection',onConn);
+peer.on('disconnected',()=>{if(!dead)try{peer.reconnect()}catch(e){}});
+peer.on('error',e=>{if(!done)fail(e)});
+}else{
+peer=new Peer(undefined,peerOpts2(net));
+peer.on('connection',onConn);
+peer.on('open',id=>{myId=id;connectHost()});
+peer.on('disconnected',()=>{if(!dead)try{peer.reconnect()}catch(e){}});peer.on('error',e=>{if(!done)fail(e)});
+}}catch(e){fail(e)}
+})}
+let RM=null,V=null,pt=0;const mpe=d=>{if(RM)RM.emit('b14',d).catch(()=>{})};
+const spawn=(z,x)=>{const i=Math.max(0,(S.peers||[]).findIndex(p=>p.isMe&&p.sameTab));return{x:x+.4*(i%3-1),z:z+.4*(i/3|0)}};
+const rem=new T.Group();scene.add(rem);const AV={};
+const me=()=>(S.peers||[]).find(p=>p.isMe&&p.sameTab),gp=()=>(S.peers||[]).filter(p=>p.presence.g),hp=()=>(S.peers||[]).find(p=>p.presence.host);
+let mpGen=0,MIGI=null,MSY=null,migOld='';function mpLeave(){kickNo();leaveNo();$('mb').textContent='KEMBALI';mpGen++;regGen++;MIGI=null;if(MSY){clearTimeout(MSY.t);clearInterval(MSY.iv);MSY=null}regStop();rcHide();$('cb').classList.add('hid');$('cp').classList.add('hid');S.chatOpen=0;S.chatLog=[];if(RM){try{RM.leave()}catch(e){}}RM=null;S.mp=0;S.host=0;S.peers=[];V=null;S.vk=null;$('vt').classList.add('hid');for(const k in AV){rem.remove(AV[k]);delete AV[k]}}
+const CODE=()=>Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.random()*24|0]).join('');
+const MPE={nolib:'Pustaka PeerJS gagal dimuat. Periksa internet lalu muat ulang game.','peer-unavailable':'Room/server tidak ditemukan atau sudah ditutup. Periksa ID lalu coba REFRESH.',full:'Room penuh (maksimal 4 pemain).',started:'Game di room ini sudah dimulai.',timeout:'Waktu koneksi habis. Coba lagi.',net:'Tidak dapat menghubungi server. Periksa internet atau config.js.',registry:'Room dibuat tetapi gagal didaftarkan ke server. Coba lagi.',id_taken:'ID room bentrok, coba buat ulang.',too_many:'Terlalu banyak room dari alamat ini.',lanaddr:'Alamat server LAN tidak valid. Contoh: 192.168.1.5:3000',mixed:'Browser memblokir alamat http dari halaman https. Buka game lewat http://IP-SERVER:3000 atau kosongkan alamat.',lanprobe:'Server LAN tidak ditemukan di alamat itu. Pastikan npm start berjalan dan satu jaringan.',network:'Koneksi jaringan ke signaling bermasalah.','server-error':'Server signaling tidak dapat dihubungi.','socket-error':'Server signaling tidak dapat dihubungi.','socket-closed':'Koneksi ke signaling terputus.','ssl-unavailable':'Signaling tidak mendukung HTTPS. Periksa PEERJS_SECURE di config.js.',closed:'Koneksi ditutup oleh host.',kick:'Host mengeluarkan kamu dari room.',kicked:'Host mengeluarkan kamu dari room ini.',stale:'Kamu sudah tidak terdaftar di sesi ini.'};
+function mpBack(msg){if(lastNet=='online'){$('mp').classList.add('hid');oShow(msg)}else{$('mp').classList.remove('hid');$('mph').textContent='BUS 14 — MULTIPLAYER LAN';$('mpa').classList.remove('hid');$('mr').classList.add('hid');$('mn').textContent=msg||'';lanRefresh(1)}}
+async function mpJoin(id,host,max,net,sname,hidden){if(RM)return;audio();const tk=++mpGen;net=net||'lan';lastNet=net;pnCommit(net);const mn=$(net=='online'?'on':'mn');
+mn.textContent=host?'Membuat room...':'Menghubungkan ke room...';setBusy(net,1);
+try{if(!window.Peer)throw{type:'nolib'};const tg=await target(net);if(tk!=mpGen)return;
+const init={name:C.name,hat:C.hat,sh:C.sh,pn:C.pn,rdy:0,host:host?1:0,g:0,t0:Date.now()};if(host)init.sn=String(sname||'Server '+C.name).slice(0,24);let rm=null;
+for(let i=0;!rm;i++){try{rm=await mkRoom(id,host,init,{can:()=>S.mp?'started':0,close:mpLost,state:onRoomState,host:onNewHost,mig:onMigEv,up:onPeerUp},max,{prefix:NETP[net],peer:tg.peer,mig:net=='lan'})}catch(e){if(host&&e&&e.type=='unavailable-id'&&i<5&&tk==mpGen){id=CODE();continue}throw e}}
+if(tk!=mpGen){rm.leave();return}
+if(host&&tg.api){try{await regStart(tg,net,id,init.sn,max,net=='online'&&!!hidden)}catch(e){rm.leave();throw e&&e.status==409?{type:'id_taken'}:(e&&e.type=='http'?e:{type:'registry'})}if(tk!=mpGen){regStop();rm.leave();return}}
+RM=rm;S.host=host;MIGI=net=='lan'?{id,tg}:null;RM.on('b14',onMsg);RM.onPeers(c=>{if(!S.host&&!c.peers.some(p=>p.presence.host)){hostEnded('lost');return}S.peers=c.peers;recName();lobby();regSync()});mn.textContent='';
+$('mo').classList.add('hid');$('mp').classList.remove('hid');$('mph').textContent='BUS 14 — MULTIPLAYER '+(net=='online'?'ONLINE':'LAN');$('mpa').classList.add('hid');$('mr').classList.remove('hid');$('mw').textContent='';$('mid').textContent='ROOM ID: '+id;hidMsg('');lobby()}
+catch(e){if(tk==mpGen){mn.textContent=errMsg(e);if(net=='online')oRefresh(1)}}finally{setBusy(net,0)}}
+// ---------- KICK PLAYER (hanya host; tombol di daftar pemain lobi, konfirmasi lewat dialog di dalam game)
+let KT=null;
+function lobbyList(P){const l=$('mpl');l.replaceChildren();P.forEach(p=>{const r=document.createElement('div'),n=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');r.className='ri pi'+(p.isMe?' me':'');n.className='rn';
+b.textContent=nm(p)+(p.isMe?' (kamu)':'')+(p.presence.host?' ★ HOST':'');sm.textContent=p.away?'menyambung ulang…':p.presence.host?'pemilik room':p.presence.rdy?'✓ SIAP':'… belum siap';n.append(b,sm);r.append(n);
+if(S.host&&!p.isMe&&!p.presence.host){const k=document.createElement('button');k.textContent='KICK';k.onclick=()=>kickAsk(p);r.append(k)}l.append(r)});
+if(KT&&!P.some(p=>p.peer==KT))kickNo()}
+function kickAsk(p){if(!S.host||!RM||p.isMe||p.presence.host)return;KT=p.peer;$('kcm').textContent='Keluarkan '+nm(p)+' dari room ini? Pemain langsung terputus dan tidak bisa bergabung kembali dengan koneksi lama.';$('kc').classList.remove('hid')}
+function kickNo(){KT=null;$('kc').classList.add('hid')}
+function kickYes(){const id=KT,p=(S.peers||[]).find(q=>q.peer==id);kickNo();if(!S.host||!RM||!id)return;hint(RM.kick&&RM.kick(id)?(p?nm(p):'Pemain')+' dikeluarkan dari room.':'Pemain sudah tidak ada di room.')}
+$('kcy').onclick=kickYes;$('kcn').onclick=kickNo;
+function lobby(){hidUI();$('mb').textContent=RM&&!S.host&&isNet()?'KELUAR DARI ROOM':'KEMBALI';const P=S.peers||[],H=P.find(p=>p.presence.host),cap=H?Math.min(4,Math.max(2,(H.presence.mx|0)||4)):4;const sp=[...P].sort((a,b)=>(a.presence.t0||1e15)-(b.presence.t0||1e15)||(a.peer<b.peer?-1:1)),mi=sp.findIndex(p=>p.isMe&&p.sameTab);if(mi>=cap&&!S.mp&&sp[mi].presence.t0){mpLeave();mpBack('Room penuh (maksimal 4 pemain).');return}$('ml').textContent=(H&&H.presence.sn?'Server: '+H.presence.sn+'\n':'')+'Pemain: '+P.length+'/'+cap+(S.host&&P.length<2?'\nMenunggu minimal 2 pemain...':'');lobbyList(P);$('mst').style.display=S.host?'':'none';$('mst').disabled=P.length<2||!P.every(p=>p.presence.host||p.presence.rdy)}
+function onMsg(m){const d=m.data||{},h=hp();if(d.t=='chat'){gotChat(m.peer,d.m);return}if(d.t=='req'&&S.host){if(d.k=='travel'||d.k=='exit')hreq(d.k)}else if(d.t=='cast'&&S.host)hcast(m.peer,d.y);else if(h&&m.peer==h.peer){
+if(d.t=='start'){$('cb').classList.remove('hid');cbLab();S.mp=1;regSync(1);$('mp').classList.add('hid');S.n=1;S.nn=0;RM.presence({g:1});lockReq();loadGo('MEMUAT MULTIPLAYER',()=>run(()=>goTerm(0)))}
+else if(d.t=='vote')showV(d);else if(d.t=='do'){if(S.mode=='bus')run(d.k=='travel'?pressed:exited)}else if(d.t=='board'){S.mpA=d.a;S.sd=d.sd;run(board)}else if(d.t=='sync'){if(!S.host&&S.mode=='term'&&S.dopen&&S.n==d.n&&d.a!=null){S.mpA=d.a;S.sd=d.sd;run(board)}}}}
+function hreq(k){if(V||S.mode!='bus'||S.busy||S.done)return;V={k,v:{},end:performance.now()+15000};vsend()}
+function vtal(){const a=Object.values(V.v),y=a.filter(x=>x).length;return[y,a.length-y]}
+function vsend(){const[y,n]=vtal();mpe({t:'vote',k:V.k,y,n,tot:gp().length})}
+function hcast(p,y){if(!V||!gp().some(q=>q.peer==p))return;V.v[p]=y?1:0;vsend();if(Object.keys(V.v).length>=gp().length)vend()}
+function vend(){if(!V)return;const[y,n]=vtal(),k=V.k;V=null;mpe({t:'vote',k:null});if(y>n)mpe({t:'do',k})}
+const VT={exit:['KELUAR DARI BUS?','YA — KELUAR','TIDAK — TETAP DI DALAM','KELUAR','TETAP'],travel:['LANJUTKAN PERJALANAN?','YA — LANJUTKAN','TIDAK — JANGAN JALAN','LANJUT','TUNGGU']};
+function showV(d){const el=$('vt');if(!d.k){S.vk=null;el.classList.add('hid');return}const t=VT[d.k];if(S.vk!=d.k)S.voted=0;S.vk=d.k;el.classList.remove('hid');$('vq').textContent=t[0];$('vy').textContent='YA';$('vn').textContent='TIDAK';$('vbx').style.display=S.voted?'none':'';$('vs').textContent=(touch?'':'Y = Ya      N = Tidak\n')+t[3]+': '+d.y+'   '+t[4]+': '+d.n+'\nVote: '+(d.y+d.n)+' / '+d.tot+(S.voted&&d.y+d.n<d.tot?'\nMenunggu semua pemain...':'')}
+function castV(y){if(!S.vk||S.voted)return;S.voted=1;mpe({t:'cast',y});$('vbx').style.display='none'}
+// Model karakter: depan = sumbu -Z lokal (sama dengan arah kamera saat rotation.y = yaw)
+// ---------- kustomisasi karakter & nama (disimpan di localStorage 'b14cz')
+const NAMES=['Diamond231','ShadowStrike99','Vortex_X','FrostByte77','NightWolf404','CyberNinja88','AlphaGamer123','PhantomX55','EchoRider7','StormBringer99'];
+const SH=[0x4a6a8a,0x8a2a2a,0x4a6a3a,0xd9a93a,0x8a9099,0x1a1c20,0xd8dde3,0x6a3a8a,0x39ff14,0x1f51ff,0x0d0d10,0x3a3f46],PN=[0x222831,0x111111,0x5a6068,0x5a4128,0x1f3350,0x8a7a55,0x2f4a2a,0x6a2222,0x39ff14,0x1f51ff,0x3a3f46];
+const HATS=['TANPA','CAP','TINGGI','BEANIE','KOBOI','KERUCUT','PECI','HEADSET','HELM LAS'],HC=[0,0x8a2a2a,0x15181d,0x3a5a7a,0x6a4a2a,0xd9a93a,0x0b0b0d,0x8a9099,0x6a6f75];
+// ---------- aksesoris rahasia: indeks 6-7 (topi), 8-10 (baju), 8-9 (celana) terkunci sampai kode dimasukkan. Kode disimpan sebagai hash; status terbuka disimpan di localStorage 'b14un'.
+const UL={hat:{6:'peci',7:'headset',8:'las'},sh:{8:'ng',9:'nb',10:'flag',11:'garis'},pn:{8:'ng',9:'nb',10:'garis'}},NEON=[0x39ff14,0x1f51ff],em=c=>NEON.includes(c)?c:0;
+const kh=t=>{let x=2166136261;for(const c of t){x^=c.charCodeAt(0);x=Math.imul(x,16777619)>>>0}return x.toString(36)};
+const CODES={'1g2ep3v':['peci'],'1vdqlg9':['ng'],'172tsn8':['nb'],'1rwjhx':['flag'],'1fa2qaj':['headset'],'5jsdom':['las','garis']};
+let UN=[];try{const a=JSON.parse(localStorage.getItem('b14un')||'[]');if(Array.isArray(a))UN=a.filter(x=>typeof x=='string')}catch(e){}
+const saveU=()=>{try{localStorage.setItem('b14un',JSON.stringify(UN))}catch(e){}};
+const isOpen=(k,i)=>{const u=UL[k]&&UL[k][i];return !u||UN.includes(u)};
+let _ft=null;const FLAGT=()=>{if(_ft)return _ft;const c=document.createElement('canvas');c.width=120;c.height=80;const g=c.getContext('2d');g.fillStyle='#e70011';g.fillRect(0,0,120,40);g.fillStyle='#ffffff';g.fillRect(0,40,120,40);g.strokeStyle='#888';g.lineWidth=3;g.strokeRect(1.5,1.5,117,77);return _ft=new T.CanvasTexture(c)};
+const hx=n=>'#'+n.toString(16).padStart(6,'0');
+let C={hat:0,sh:0,pn:0,name:NAMES[Math.random()*NAMES.length|0]};
+try{const o=JSON.parse(localStorage.getItem('b14cz')||'null');if(o){C.hat=cl(o.hat|0,0,HATS.length-1);C.sh=cl(o.sh|0,0,SH.length-1);C.pn=cl(o.pn|0,0,PN.length-1);if(typeof o.name=='string'){const n=cleanName(o.name,'');if(n)C.name=n}}}catch(e){}
+if(!isOpen('hat',C.hat))C.hat=0;if(!isOpen('sh',C.sh))C.sh=0;if(!isOpen('pn',C.pn))C.pn=0;
+const saveC=()=>{try{localStorage.setItem('b14cz',JSON.stringify(C))}catch(e){}};saveC();
+function mkHat(k,g){const y=1.55,c=(geo,col,yy,z)=>{const m=new T.Mesh(geo,M(col));m.position.set(0,yy,z||0);g.add(m)},h=HC[k];
+if(k==1){c(new T.SphereGeometry(.17,8,6,0,6.283,0,1.571),h,y+.03);c(new T.BoxGeometry(.22,.02,.14),h,y+.05,-.2)}
+else if(k==2){c(new T.CylinderGeometry(.11,.11,.2,8),h,y+.2);c(new T.CylinderGeometry(.22,.22,.02,10),h,y+.11);c(new T.CylinderGeometry(.115,.115,.04,8),0x8a2a2a,y+.14)}
+else if(k==3){c(new T.SphereGeometry(.17,8,6,0,6.283,0,1.571),h,y+.01);c(new T.SphereGeometry(.05,6,6),0xd8dde3,y+.2)}
+else if(k==4){c(new T.CylinderGeometry(.3,.3,.02,10),h,y+.11);c(new T.CylinderGeometry(.1,.13,.13,8),h,y+.18)}
+else if(k==5){c(new T.ConeGeometry(.13,.3,8),h,y+.27);c(new T.SphereGeometry(.04,6,6),0xd8dde3,y+.43)}
+else if(k==6){c(new T.CylinderGeometry(.125,.15,.13,14),h,y+.11);c(new T.CylinderGeometry(.152,.152,.012,14),0xd9a93a,y+.052)}
+else if(k==7){const b=new T.Mesh(new T.TorusGeometry(.17,.016,6,16,Math.PI),M(h));b.position.set(0,y,0);g.add(b);[-1,1].forEach(s=>{const e=new T.Mesh(new T.BoxGeometry(.06,.11,.09),M(0x555a60));e.position.set(s*.17,y,0);g.add(e)});const mb=new T.Mesh(new T.BoxGeometry(.012,.012,.11),M(h));mb.position.set(-.17,y-.07,-.05);g.add(mb)}
+else if(k==8){const sh=new T.Mesh(new T.SphereGeometry(.2,12,9),M(h));sh.position.set(0,y-.01,0);sh.scale.set(1,1.05,1.05);g.add(sh);
+const fr=new T.Mesh(new T.BoxGeometry(.3,.19,.05),M(0x4a4e54));fr.position.set(0,y-.01,-.19);g.add(fr);
+const vs=new T.Mesh(new T.BoxGeometry(.24,.1,.03),M(0x08130d,0x0a2a1a));vs.position.set(0,y,-.215);g.add(vs);
+[-1,1].forEach(s=>{const bt=new T.Mesh(new T.CylinderGeometry(.03,.03,.04,6),M(0x4a4e54));bt.rotation.z=Math.PI/2;bt.position.set(s*.2,y,-.04);g.add(bt)})}}
+const nm=p=>(S.names&&S.names[p.peer])||cleanName(p.presence&&p.presence.name);
+const sig=p=>nm(p)+'|'+p.presence.hat+'|'+p.presence.sh+'|'+p.presence.pn;
+// nama kembar otomatis: urutan deterministik (t0, id) -> semua klien menghasilkan nama yang sama
+function recName(){const P=[...(S.peers||[])].sort((a,b)=>(a.presence.t0||1e15)-(b.presence.t0||1e15)||(a.peer<b.peer?-1:1)),cnt={},o={};P.forEach(p=>{const b=cleanName(p.presence&&p.presence.name),k=b.toLowerCase(),n=cnt[k]||0;cnt[k]=n+1;o[p.peer]=n?b+' ('+n+')':b});S.names=o}
+// <<PNAME — input nama pemain (Pengaturan, layar LAN, layar ONLINE): semua kolom terhubung ke C.name (disimpan di localStorage 'b14cz'; bertahan selama sesi & antar-sesi)
+const PNI=['nm','pnl','pno'];let OSN_AUTO='';
+const pnLenient=r=>Array.from(String(r==null?'':r).replace(/\s/g,' ').replace(/[^\p{L}\p{N} _.'-]/gu,'')).slice(0,NAME_MAX).join('');
+// nama server bawaan = 'Server <nama pemain>'; hanya diperbarui jika kolom masih kosong/masih bawaan — nama server kustom TIDAK pernah ditimpa
+function osnAuto(){const e=$('osn');if(!e)return;const a='Server '+C.name;if(!e.value||e.value===OSN_AUTO){e.value=a;OSN_AUTO=a}}
+function pnSet(raw,src){C.name=cleanName(raw);saveC();PNI.forEach(i=>{const e=$(i);if(e&&i!==src)e.value=C.name});osnAuto()}
+function pnLive(e){const v=pnLenient(e.target.value);if(v!==e.target.value)e.target.value=v;pnSet(v,e.target.id)}
+function pnDone(e){pnSet(e.target.value,e.target.id);e.target.value=C.name}
+function pnCommit(net){const e=$(net=='online'?'pno':'pnl');if(e){pnSet(e.value,e.id);e.value=C.name}return C.name}
+PNI.forEach(i=>{const e=$(i);if(!e)return;e.value=C.name;e.oninput=pnLive;e.onchange=pnDone;e.onblur=pnDone});osnAuto();
+// PNAME>>
+let _stm=null;const STR=()=>{if(_stm)return _stm;const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d');g.fillStyle='#3a3f46';g.fillRect(0,0,96,96);g.fillStyle='#6f757d';for(let x=2;x<96;x+=8)g.fillRect(x,0,1,96);return _stm=new T.MeshLambertMaterial({map:new T.CanvasTexture(c)})};
+function mkBody(col,name,cz){const sidx=cz?cl(cz.sh|0,0,SH.length-1):-1;if(cz)col=SH[sidx];const pidx=cz?cl(cz.pn|0,0,PN.length-1):-1,pc=cz?PN[pidx]:0x222831,js=sidx==11,ps=pidx==10;const g=new T.Group();
+const SB=(w,h,d,x,y,z,p)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),STR());m.position.set(x,y,z);p.add(m);return m};
+if(js){SB(.45,.7,.28,0,1,0,g);[-1,1].forEach(s=>B(.07,.45,.012,0x2c3036,s*.1,1.08,-.148,g));B(.15,.52,.012,0xf2f2f2,0,1.06,-.146,g);B(.17,.04,.03,0xf2f2f2,0,1.31,-.15,g);B(.052,.36,.012,0x0a0a0a,0,1.02,-.156,g);B(.07,.06,.016,0x0a0a0a,0,1.25,-.156,g)}else B(.45,.7,.28,col,0,1,0,g,em(col));
+if(sidx==10){const f=new T.Mesh(new T.PlaneGeometry(.27,.18),new T.MeshBasicMaterial({map:FLAGT()}));f.position.set(0,1.13,-.145);f.rotation.y=Math.PI;g.add(f)}
+const lg=[-1,1].map(s=>{const q=new T.Group();q.position.set(s*.11,.5,0);(ps?SB(.18,.5,.22,0,-.25,0,q):B(.18,.5,.22,pc,0,-.25,0,q,em(pc)));g.add(q);return q});
+const ar=[-1,1].map(s=>{const q=new T.Group();q.position.set(s*.31,1.3,0);(js?SB(.12,.55,.14,0,-.27,0,q):B(.12,.55,.14,col,0,-.27,0,q,em(col)));g.add(q);return q});
+const h=new T.Mesh(new T.SphereGeometry(.15,8,8),M(0xd2a988));h.position.y=1.55;g.add(h);
+B(.2,.07,.06,0x15181d,0,1.57,-.13,g);
+if(cz)mkHat(cl(cz.hat|0,0,HATS.length-1),g);if(name){const s=new T.Sprite(new T.SpriteMaterial({map:tex(String(name).slice(0,22),384,64,'#000000aa','#ffffff',32),transparent:true,depthTest:false}));s.scale.set(1.5,.25,1);s.position.y=2.15;g.add(s)}
+g.userData={lg,ar,ph:0};return g}
+function swing(g,sp,dt){const u=g.userData,k=Math.min(1,sp/2.3);u.ph+=dt*9*k;const a=Math.sin(u.ph)*.7*k;u.lg[0].rotation.x=a;u.lg[1].rotation.x=-a;u.ar[0].rotation.x=-a;u.ar[1].rotation.x=a}
+const avCol=id=>new T.Color().setHSL(((parseInt(String(id).slice(0,3),36)||1)%360)/360,.5,.45).getHex();
+function mkAv(p){const g=mkBody(0,nm(p),p.presence);g.userData.sig=sig(p);g.position.set(p.presence.x||0,0,p.presence.z||0);g.rotation.y=p.presence.r||0;rem.add(g);return g}
+// avatar pemain sendiri (terlihat di mode orang ketiga)
+let selfAv=null;function ensureSelf(){const m=me(),id=m?m.peer:'self',sg=C.hat+'|'+C.sh+'|'+C.pn;if(selfAv&&selfAv.userData.id==id&&selfAv.userData.sg==sg)return selfAv;if(selfAv)scene.remove(selfAv);selfAv=mkBody(0,null,C);selfAv.userData.id=id;selfAv.userData.sg=sg;scene.add(selfAv);return selfAv}
+function mpTick(dt){if(!RM||!S.mp)return;pt+=dt;if(pt>.12){pt=0;RM.presence({x:+P0.x.toFixed(2),z:+P0.z.toFixed(2),r:+fy.toFixed(2),sc:S.sc}).catch(()=>{})}
+if(S.host&&V){let ch=0;for(const k of Object.keys(V.v))if(!gp().some(q=>q.peer==k)){delete V.v[k];ch=1} // pemain keluar: suaranya dibuang, total diperbarui
+if(ch)vsend();if(performance.now()>V.end||Object.keys(V.v).length>=gp().length)vend()}const live=new Set();
+(S.peers||[]).forEach(p=>{const q=p.presence||{};if(p.isMe||!(q.g||q.x!=null))return;live.add(p.peer);let a=AV[p.peer];if(a&&a.userData.sig!=sig(p)){rem.remove(a);a=null}if(!a)a=AV[p.peer]=mkAv(p);a.visible=(q.sc==null||q.sc==S.sc)&&S.mode!='menu';if(a.visible){const f=Math.min(1,dt*10),tx=q.x||0,tz=q.z||0;if(Math.hypot(tx-a.position.x,tz-a.position.z)>5){a.position.x=tx;a.position.z=tz}const ox=a.position.x,oz=a.position.z;a.position.x+=(tx-a.position.x)*f;a.position.z+=(tz-a.position.z)*f;let dr=(q.r||0)-a.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));a.rotation.y+=dr*f;swing(a,Math.hypot(a.position.x-ox,a.position.z-oz)/Math.max(dt,.001),dt)}});
+for(const k in AV)if(!live.has(k)){rem.remove(AV[k]);delete AV[k]}}
+$('bp').onclick=()=>lanOpen();
+let MX=4;$('mxg').onclick=e=>{const b=e.target.closest('button');if(!b)return;MX=Math.min(4,Math.max(2,(+b.dataset.n|0)||4));[...$('mxg').children].forEach(x=>x.classList.toggle('on',x===b))};
+$('mc').onclick=()=>mpJoin(CODE(),1,MX,'lan',lanName());
+$('mj').onclick=()=>{const v=$('mi').value.trim().toUpperCase();if(/^[A-Z]{4}$/.test(v))mpJoin(v,0,0,'lan');else $('mn').textContent='Masukkan ID room (4 huruf).'};
+$('mrdy').onclick=()=>{const m=me();if(m&&RM)RM.presence({rdy:m.presence.rdy?0:1})};$('mst').onclick=()=>mpe({t:'start'});
+$('mb').onclick=()=>{if(guestLocked()){hint('Kamu tidak bisa keluar saat sesi berlangsung. Hanya host yang dapat mengakhiri sesi.');return}if(RM&&!S.host&&isNet()){leaveAsk();return}const inL=!$('mr').classList.contains('hid');mpLeave();if(inL)mpBack('');else{clearInterval(LT);LT=null;$('mp').classList.add('hid');$('menu').classList.remove('hid')}};$('vy').onclick=()=>castV(1);$('vn').onclick=()=>castV(0);
+// ---------- konfigurasi, registry & UI multiplayer (LAN dan ONLINE dipisah: prefix ID peer, signaling, daftar room, dan layar)
+const CFG=window.GAME_CONFIG||{},NETP={lan:'b14l-',online:'b14o-'};let lastNet='lan';
+const bad1=v=>typeof v!='string'||!v.trim()||/link\s*kamu/i.test(v)||!/^https?:\/\//i.test(v.trim());
+const badHost=v=>typeof v!='string'||!v.trim()||/link\s*kamu/i.test(v);
+function cfgBad(){const a=[];if(bad1(CFG.SERVER_URL)&&bad1(CFG.API_BASE_URL))a.push('SERVER_URL / API_BASE_URL');if(badHost(CFG.PEERJS_HOST))a.push('PEERJS_HOST');
+const u=(!bad1(CFG.API_BASE_URL)?CFG.API_BASE_URL:CFG.SERVER_URL)||'';if(!a.length&&location.protocol=='https:'&&/^http:\/\//i.test(u))a.push('SERVER_URL (harus https:// karena game dibuka lewat https)');return a}
+const trimU=s=>String(s).trim().replace(/\/+$/,'');
+const apiBase=()=>!bad1(CFG.API_BASE_URL)?trimU(CFG.API_BASE_URL):trimU(CFG.SERVER_URL)+'/api';
+const srvBase=()=>!bad1(CFG.SERVER_URL)?trimU(CFG.SERVER_URL):trimU(CFG.API_BASE_URL).replace(/\/api$/i,'');
+const peerCfg=()=>({host:String(CFG.PEERJS_HOST).trim().replace(/^[a-z]+:\/\//i,'').replace(/[\/:].*$/,''),port:+CFG.PEERJS_PORT||443,secure:CFG.PEERJS_SECURE!==false,path:CFG.PEERJS_PATH||'/peerjs'});
+async function fj(url,ms,opt){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms||8000);try{const r=await fetch(url,Object.assign({signal:c.signal,cache:'no-store'},opt||{}));let j=null;try{j=await r.json()}catch(e){}if(!r.ok)throw{type:'http',status:r.status,msg:j&&j.error};return j}catch(e){if(e&&e.name=='AbortError')throw{type:'timeout'};if(e&&e.type)throw e;throw{type:'net'}}finally{clearTimeout(t)}}
+const api=(base,path,opt)=>fj(base+path,8000,opt&&opt.body?Object.assign({headers:{'Content-Type':'application/json'}},opt):opt);
+async function probe(srv){let h;try{h=await fj(srv+'/health',3500)}catch(e){throw{type:'lanprobe'}}if(!h||h.app!='bus14-server')throw{type:'lanprobe'};return h}
+function errMsg(e){const t=e&&e.type;if(t=='config')return'Konfigurasi belum lengkap. Isi di config.js: '+(e.list||[]).join(', ')+'. Lihat README.md.';if(t=='http')return e.msg||('Server menolak permintaan (kode '+e.status+').');return MPE[t]||'Gagal terhubung ke room.'}
+const isPriv=h=>/^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/.test(h)||/\.local$/i.test(h);
+const LAN={det:null};
+async function lanDetect(){LAN.det=null;if(!/^https?:$/.test(location.protocol)||!isPriv(location.hostname))return;try{await probe(location.origin);const sec=location.protocol=='https:';LAN.det={srv:location.origin,api:location.origin+'/api',peer:{host:location.hostname,port:+location.port||(sec?443:80),secure:sec,path:'/peerjs'}}}catch(e){}}
+async function lanResolve(){const v=($('ma').value||'').trim();if(v){const m=/^(https?:\/\/)?([A-Za-z0-9.\-]+)(?::(\d{1,5}))?\/?$/.exec(v);if(!m)throw{type:'lanaddr'};const sec=/^https:/i.test(m[1]||''),port=+m[3]||(sec?443:3000);if(location.protocol=='https:'&&!sec)throw{type:'mixed'};const srv=(sec?'https://':'http://')+m[2]+':'+port;await probe(srv);return{srv,api:srv+'/api',peer:{host:m[2],port,secure:sec,path:'/peerjs'}}}
+return LAN.det||{srv:null,api:null,peer:{}}}
+async function target(net){if(net=='online'){const b=cfgBad();if(b.length)throw{type:'config',list:b};return{srv:srvBase(),api:apiBase(),peer:peerCfg()}}return lanResolve()}
+// --- registry client (host mendaftarkan room, heartbeat, hapus saat keluar)
+let REG=null;
+async function regStart(tg,net,id,name,max,hidden){hidden=!!hidden;const r=await api(tg.api,'/rooms',{method:'POST',body:JSON.stringify({id,name,max,hostName:C.name,mode:net,hidden})});REG={api:tg.api,id,mode:net,token:r.token,name,hostName:C.name,max,hidden,last:performance.now(),fail:0};REG.t=setInterval(()=>regSync(1),Math.max(3000,r.heartbeatMs||8000))}
+function regSync(force){const r=REG;if(!r)return;const t=performance.now();if(!force&&t-r.last<1500){if(!r.tt)r.tt=setTimeout(()=>{r.tt=0;if(REG===r)regSync(1)},1600-(t-r.last));return}r.last=t;
+api(r.api,'/rooms/'+r.id,{method:'PUT',body:JSON.stringify({mode:r.mode,token:r.token,players:(S.peers||[]).length||1,status:S.mp?'BERMAIN':'LOBBY',hidden:!!r.hidden})}).then(()=>{r.fail=0;if($('mw'))$('mw').textContent=''}).catch(e=>{if(REG!==r)return;
+if(e&&(e.status==404||e.status==403)){api(r.api,'/rooms',{method:'POST',body:JSON.stringify({id:r.id,name:r.name,max:r.max,hostName:r.hostName||C.name,mode:r.mode,hidden:!!r.hidden})}).then(x=>{if(REG===r){r.token=x.token;r.fail=0}}).catch(()=>{r.fail++})}else r.fail++;
+if(r.fail>=2&&$('mw'))$('mw').textContent='Peringatan: koneksi ke server daftar bermasalah. Room mungkin tidak terlihat di daftar.'})}
+function regStop(){const r=REG;REG=null;if(!r)return;clearInterval(r.t);clearTimeout(r.tt);try{const b=JSON.stringify({token:r.token,mode:r.mode}),u=r.api+'/rooms/'+r.id+'/close';if(navigator.sendBeacon)navigator.sendBeacon(u,new Blob([b],{type:'text/plain'}));else fetch(u,{method:'POST',body:b,keepalive:true}).catch(()=>{})}catch(e){}}
+// --- sembunyikan room dari list server (host, ONLINE). Status disimpan di registry server; koneksi P2P pemain tidak disentuh.
+const hidMsg=t=>{['mhs','phs'].forEach(i=>{const e=$(i);if(e)e.textContent=t||''})};
+function hidUI(){const on=!!(S.host&&REG&&REG.mode=='online');['mhk','phk'].forEach(i=>{const e=$(i);if(e)e.classList.toggle('hid',!on)});if(on)$('mhd').checked=$('phd').checked=!!REG.hidden;else hidMsg('')}
+let hidBusy=0;
+async function setHidden(v){const r=REG;v=!!v;if(!r||!S.host||r.mode!='online'||hidBusy){hidUI();return}
+hidBusy=1;['mhd','phd'].forEach(i=>{$(i).disabled=true});hidMsg('Memperbarui status room...');
+const put=()=>api(r.api,'/rooms/'+r.id,{method:'PUT',body:JSON.stringify({mode:r.mode,token:r.token,players:(S.peers||[]).length||1,status:S.mp?'BERMAIN':'LOBBY',hidden:v})});
+try{try{await put()}catch(e){if(e&&(e.status==404||e.status==403)){const x=await api(r.api,'/rooms',{method:'POST',body:JSON.stringify({id:r.id,name:r.name,max:r.max,hostName:r.hostName||C.name,mode:r.mode,hidden:v})});if(REG===r)r.token=x.token}else throw e}
+if(REG===r)r.hidden=v;hidMsg(v?'Room disembunyikan dari list server. Pemain tetap bisa masuk lewat Room ID.':'Room tampil kembali di list server.')}
+catch(e){hidMsg('Gagal mengubah status: '+errMsg(e))}
+finally{hidBusy=0;['mhd','phd'].forEach(i=>{$(i).disabled=false});hidUI()}}
+$('mhd').onchange=e=>setHidden(e.target.checked);$('phd').onchange=e=>setHidden(e.target.checked);
+addEventListener('pagehide',()=>{if(RM){try{RM.leave(1)}catch(e){}}regStop()});addEventListener('pageshow',e=>{if(e.persisted&&RM)toMenu()});
+// --- daftar room (dipakai ONLINE dan LAN-server-lokal). textContent saja: nama room berasal dari pemain lain.
+function renderRooms(el,rooms,q,onJoin,emptyTxt){el.replaceChildren();q=(q||'').trim().toLowerCase();const L=(rooms||[]).filter(r=>!q||(r.name+' '+r.id+' '+r.hostName).toLowerCase().includes(q));
+if(!L.length){const d=document.createElement('div');d.className='re';d.textContent=emptyTxt||'Belum ada server aktif.';el.appendChild(d);return}
+L.forEach(r=>{const row=document.createElement('div');row.className='ri';const a=document.createElement('div');a.className='rn';const n=document.createElement('b');n.textContent=r.name;const s=document.createElement('small');s.textContent='ID '+r.id+' · host '+r.hostName;a.append(n,s);
+const c=document.createElement('div');c.className='rc';c.textContent=r.players+'/'+r.max;const st=document.createElement('div');st.className='rs '+(r.full?'fu':r.status=='BERMAIN'?'pl':'lb2');st.textContent=r.full?'PENUH':r.status;
+const b=document.createElement('button');b.textContent='GABUNG';b.disabled=!!(r.full||r.status=='BERMAIN');b.onclick=()=>onJoin(r);row.append(a,c,st,b);el.appendChild(row)})}
+const setBusy=(net,on)=>{const ids=net=='online'?['orf','ocr','ocg','ojn']:['mc','mj','mlr'];ids.forEach(i=>{const e=$(i);if(e)e.disabled=!!on});(net=='online'?$('olist'):$('lanl')).querySelectorAll('button').forEach(b=>{if(on)b.disabled=true})};
+// --- layar MULTIPLAYER ONLINE
+let ORooms=[],OT=null,oSeq=0,OMX=4;
+function setOst(k,v){const e=$('ost');e.className=k=='on'?'ok':k=='off'||k=='cfg'?'er':'';e.textContent=k=='on'?'● ONLINE · ping '+v+' ms':k=='off'?'● OFFLINE — server tidak dapat dihubungi':k=='cfg'?'● KONFIGURASI BELUM LENGKAP':'● MEMERIKSA SERVER...'}
+function oShow(msg){$('mo').classList.remove('hid');$('ocf').classList.add('hid');$('on').textContent=msg||'';oRefresh();clearInterval(OT);OT=setInterval(()=>{if($('mo').classList.contains('hid')){clearInterval(OT);OT=null;return}if(!document.hidden)oRefresh(1)},6000)}
+async function oRefresh(silent){if($('mo').classList.contains('hid'))return;const sq=++oSeq,b=cfgBad();
+if(b.length){setOst('cfg');ORooms=[];renderRooms($('olist'),[],'',null,'Isi config.js: '+b.join(', ')+'. Lihat README.md (bagian config.js).');$('on').textContent='Konfigurasi belum lengkap. Edit config.js lalu muat ulang game.';return}
+if(!silent){setOst('chk');$('olist').replaceChildren();const d=document.createElement('div');d.className='re';d.textContent='Memuat daftar server...';$('olist').appendChild(d)}
+try{const t0=performance.now(),h=await fj(srvBase()+'/health',4500);if(!h||h.app!='bus14-server')throw{type:'net'};const ms=Math.round(performance.now()-t0),j=await api(apiBase(),'/rooms?mode=online');if(sq!=oSeq)return;ORooms=j&&j.rooms||[];setOst('on',ms);if(!silent)$('on').textContent='';renderO()}
+catch(e){if(sq!=oSeq)return;ORooms=[];setOst('off');renderRooms($('olist'),[],'',null,'Server tidak dapat dihubungi. Periksa internet atau SERVER_URL di config.js, lalu tekan REFRESH.');$('on').textContent=errMsg(e)}}
+const renderO=()=>renderRooms($('olist'),ORooms,$('osq').value,r=>mpJoin(r.id,0,0,'online'),$('osq').value?'Tidak ada server yang cocok.':'Belum ada server aktif. Buat server baru!');
+$('bon').onclick=()=>{audio();$('menu').classList.add('hid');lastNet='online';oShow('')};
+$('ob').onclick=()=>{clearInterval(OT);OT=null;$('mo').classList.add('hid');$('menu').classList.remove('hid')};
+$('orf').onclick=()=>oRefresh();$('osq').oninput=renderO;
+$('ocr').onclick=()=>{const f=$('ocf');f.classList.toggle('hid');if(!f.classList.contains('hid')){pnCommit('online');osnAuto()}};
+$('oxg').onclick=e=>{const b=e.target.closest('button');if(!b)return;OMX=Math.min(4,Math.max(2,(+b.dataset.n|0)||4));[...$('oxg').children].forEach(x=>x.classList.toggle('on',x===b))};
+$('ocg').onclick=()=>{pnCommit('online');if(!$('osn').value.trim()){$('osn').value='';osnAuto()}const n=$('osn').value.replace(/[<>]/g,'').trim().slice(0,24);if(n.length<2){$('on').textContent='Nama server minimal 2 karakter.';return}mpJoin(CODE(),1,OMX,'online',n,$('ohd').checked)};
+$('ojn').onclick=()=>{const v=$('oid').value.trim().toUpperCase();if(/^[A-Z]{4}$/.test(v))mpJoin(v,0,0,'online');else $('on').textContent='Masukkan ID room (4 huruf).'};
+// --- layar MULTIPLAYER LAN
+let LT=null;
+async function lanOpen(){audio();lastNet='lan';$('menu').classList.add('hid');$('mp').classList.remove('hid');$('mph').textContent='BUS 14 — MULTIPLAYER LAN';$('mpa').classList.remove('hid');$('mr').classList.add('hid');$('mn').textContent='';
+$('mlh').textContent='Memeriksa server LAN lokal...';await lanDetect();lanHint();lanRefresh();clearInterval(LT);LT=setInterval(()=>{if($('mp').classList.contains('hid')||$('mpa').classList.contains('hid')){clearInterval(LT);LT=null;return}if(!document.hidden)lanRefresh(1)},6000)}
+function lanHint(){$('mlh').textContent=LAN.det?'Server LAN lokal terdeteksi ('+location.host+'). Sesi di jaringan ini tampil di bawah.':'Browser tidak bisa mencari sesi LAN sendiri. Gunakan KODE ROOM 4 huruf dari pembuat room, atau isi alamat server LAN (mis. 192.168.1.5:3000) jika ada yang menjalankan npm start di jaringan ini.'}
+async function lanRefresh(silent){const el=$('lanl');let tg;try{tg=await lanResolve()}catch(e){el.replaceChildren();if(!silent)$('mn').textContent=errMsg(e);return}
+if(!tg.api){el.replaceChildren();return}if(!silent){$('mn').textContent=''}
+try{const j=await api(tg.api,'/rooms?mode=lan');renderRooms(el,j&&j.rooms||[],'',r=>mpJoin(r.id,0,0,'lan'),'Belum ada sesi LAN di server ini.')}catch(e){if(!silent)$('mn').textContent='Gagal memuat sesi LAN: '+errMsg(e)}}
+const lanName=()=>{pnCommit('lan');return 'LAN '+C.name};
+$('mlr').onclick=()=>lanRefresh();
+// <<HOSTGUARD
+// ---------- aturan host/guest: guest tidak boleh keluar sendiri saat sesi berjalan; ONLINE: host putus/keluar = sesi berakhir untuk semua guest; LAN: host pindah ke guest terpilih (HOST MIGRATION, lihat mkRoom)
+const GUEST_LOCK_LOBBY=false,HL_SECS=6; // GUEST_LOCK_LOBBY=true: guest juga tidak bisa keluar dari lobi sebelum game dimulai
+const HL={t:0,on:0,rc:0};let hnT=0,exT=0;
+const migOn=()=>typeof lastNet!='undefined'&&lastNet=='lan'&&!!RM; // LAN: host keluar tidak mengakhiri sesi (host pindah)
+const isNet=()=>typeof lastNet!='undefined'&&(lastNet=='online'||lastNet=='lan'); // Multiplayer ONLINE & LAN: guest boleh keluar kapan saja tanpa kehendak host.
+const guestLocked=()=>!!(RM&&!S.host&&!isNet()&&(S.mp||GUEST_LOCK_LOBBY));
+function hint(m,ms){const e=$('hn');e.textContent=m;e.classList.remove('hid');clearTimeout(hnT);hnT=setTimeout(()=>e.classList.add('hid'),ms||3500)}
+function rcHide(){clearInterval(HL.rc);HL.rc=0;$('rcb').classList.add('hid')}
+function onRoomState(st,info){if(HL.on)return;
+if(st=='elect'){const h=hp();if(h)migOld=nm(h);clearInterval(HL.rc);HL.rc=0;$('rcb').textContent='Host terputus — memilih host baru…';$('rcb').classList.remove('hid')}
+else if(st=='recon'){const mg=!!(info&&info.mig),until=Date.now()+((info&&info.ms)||10000),upd=()=>{$('rcb').textContent=(mg?'Host baru terpilih — menyambungkan… ':'Koneksi ke host bermasalah — menyambungkan ulang… ')+Math.max(0,Math.ceil((until-Date.now())/1000))+' dtk'};upd();$('rcb').classList.remove('hid');clearInterval(HL.rc);HL.rc=setInterval(upd,500)}else rcHide()}
+// ---------- HOST MIGRATION (LAN): notifikasi, serah-terima peran host, pemulihan registry & sinkronisasi game
+function onMigEv(st,info){if(st!='done')return;rcHide();const h=(S.peers||[]).find(p=>p.peer==(info&&info.host));hint('Host lama ('+(migOld||'Host')+') terputus. '+(h?nm(h):'Pemain lain')+' kini menjadi host.',8000);lobby();syncExit()}
+function onNewHost(info){S.host=1;rcHide();hidUI();syncExit();hint('Host lama ('+(migOld||'Host')+') terputus. Kamu sekarang menjadi host.',8000);regReopen();
+if(MSY){clearTimeout(MSY.t);clearInterval(MSY.iv)}MSY={n:0,b:0};if(S.mp){MSY.iv=setInterval(()=>{if(++MSY.n>8||!S.host){clearInterval(MSY.iv);return}sendSync()},2500);MSY.t=setTimeout(sendSync,1200)}}
+function onPeerUp(){if(!MSY||!S.host||!S.mp)return;clearTimeout(MSY.t);MSY.t=setTimeout(sendSync,400)}
+// host baru: bersihkan voting lama (state-nya ada di host lama), ajak guest yang tertinggal masuk bus, dan kirim 'board' bila host lama mati sebelum sempat mengirimnya
+function sendSync(){if(!S.host||!RM||!S.mp||!MSY)return;if(!V)mpe({t:'vote',k:null});
+if(S.mode=='bus'&&S.mpA!=null)mpe({t:'sync',n:S.n,a:S.mpA,sd:S.sd});
+else if(S.mode=='term'&&S.dopen&&!MSY.b){MSY.b=1;const n=S.n;setTimeout(()=>{if(S.host&&S.mp&&S.mode=='term'&&S.dopen&&S.n==n)mpe({t:'board',a:genA(),sd:Date.now()&65535})},1500)}}
+let regGen=0;async function regReopen(){const mi=MIGI;if(!mi||!mi.tg||!mi.tg.api)return;const g=++regGen,m=me(),pr=m?m.presence:{};
+for(let i=0;i<14;i++){if(g!=regGen||!RM||!S.host)return;try{await regStart(mi.tg,'lan',mi.id,pr.sn||('LAN '+C.name),pr.mx||4,false);return}catch(e){if(!(e&&(e.status==409||e.type=='net'||e.type=='timeout')))return;await new Promise(r=>setTimeout(r,3000))}}}
+function hlBack(msg){clearInterval(HL.t);HL.t=0;HL.on=0;$('hl').classList.add('hid');mpBack(msg)}
+function hostEnded(why){if(HL.on)return;HL.on=1;rcHide();const kk=why=='kick'||why=='kicked',g=!!S.mp,msg=kk?'Host telah mengeluarkan kamu dari room.':why=='bye'?'Host keluar dari room.':(why=='stale'||why=='started'||why=='full')?'Kamu sudah tidak terdaftar di sesi ini.':'Koneksi ke host terputus.';
+if(g)toMenu();else mpLeave();
+['menu','mp','mo','pause','vt'].forEach(i=>{const e=$(i);if(e)e.classList.add('hid')});
+$('hlt').textContent=kk?'DIKELUARKAN — Kamu dikeluarkan oleh host':g?'HOST TERPUTUS — Sesi permainan berakhir':'HOST TERPUTUS — Room ditutup';$('hlm').textContent=msg;
+let n=HL_SECS;const upd=()=>{$('hlc').textContent='Kembali ke lobby dalam '+n+' detik...'};upd();$('hl').classList.remove('hid');clearInterval(HL.t);
+HL.t=setInterval(()=>{n--;if(n<=0)hlBack(msg);else upd()},1000);$('hlb').onclick=()=>hlBack(msg)}
+function mpLost(why){hostEnded(why)}
+function syncExit(){const b=$('bm');clearTimeout(exT);exT=0;if(S.mp&&RM&&!S.host&&isNet()){b.disabled=false;b.textContent='KELUAR DARI ROOM'}else if(S.mp&&RM&&!S.host){b.disabled=true;b.textContent='KELUAR DIKUNCI (HANYA HOST)'}else{b.disabled=false;b.textContent=S.mp&&S.host?(migOn()?'KELUAR (HOST PINDAH)':'AKHIRI SESI'):'MENU UTAMA'}}
+function leaveReq(){if(guestLocked()){hint('Kamu tidak bisa keluar saat sesi berlangsung. Hanya host yang dapat mengakhiri sesi.');return}
+if(RM&&!S.host&&isNet()){leaveAsk();return}
+if(S.mp&&S.host){if(!exT){$('bm').textContent=migOn()?'YAKIN? HOST PINDAH KE PEMAIN LAIN':'YAKIN? SESI BERAKHIR UNTUK SEMUA';exT=setTimeout(()=>{exT=0;syncExit()},4000);return}clearTimeout(exT);exT=0}toMenu()}
+// --- GUEST ONLINE KELUAR SENDIRI: konfirmasi (#lc) -> RM.leave() mengirim 'bye' ke host (host hanya menghapus pengirimnya sendiri) -> koneksi & listener ditutup -> kembali ke daftar server ONLINE
+function leaveAsk(){if(!RM||S.host||!isNet())return;$('lcm').textContent=S.mp?'Kamu akan meninggalkan permainan. Host dan pemain lain tetap bermain.':'Kamu akan meninggalkan room ini. Host dan pemain lain tetap di room.';$('lc').classList.remove('hid')}
+function leaveNo(){$('lc').classList.add('hid')}
+function guestLeave(){leaveNo();if(!RM||S.host||!isNet())return;const g=!!S.mp;if(g){toMenu();$('menu').classList.add('hid');mpBack('Kamu telah keluar dari room.')}else{mpLeave();mpBack('Kamu telah keluar dari room.')}}
+$('lcy').onclick=guestLeave;$('lcn').onclick=leaveNo;
+// HOSTGUARD>>
+// ---------- chat (multiplayer only)
+let unread=0;S.chatLog=[];const CK={T:'KeyT',C:'KeyC',V:'KeyV',Enter:'Enter'};try{S.cks=localStorage.getItem('b14ck')||'T'}catch(e){S.cks='T'}if(!CK[S.cks])S.cks='T';S.ck=CK[S.cks];
+const cbLab=()=>{$('cb').textContent='💬 CHAT'+(touch?'':' ['+S.cks+']')+(unread?' ('+unread+')':'')};$('ck').value=S.cks;$('ck').onchange=e=>{S.cks=e.target.value;S.ck=CK[S.cks];try{localStorage.setItem('b14ck',S.cks)}catch(x){}cbLab()};
+const cpOpen=()=>!$('cp').classList.contains('hid');
+function openChat(f){$('cp').classList.remove('hid');S.chatOpen=1;unread=0;cbLab();if(document.pointerLockElement)document.exitPointerLock();for(const k in keys)keys[k]=0;if(f)setTimeout(()=>$('ci').focus(),0);renderChat(1)}
+function closeChat(){$('cp').classList.add('hid');S.chatOpen=0;$('ci').blur();lockReq()}
+function renderChat(force){const l=$('cl'),st=l.scrollTop,atB=l.scrollHeight-l.scrollTop-l.clientHeight<24;l.textContent='';S.chatLog.forEach(c=>{const d=document.createElement('div'),b=document.createElement('b');b.textContent=c.n+': ';d.append(b,document.createTextNode(c.m));l.append(d)});if(force||atB||!l.dataset.init){l.scrollTop=l.scrollHeight;l.dataset.init=1}else l.scrollTop=st}
+function sendChat(){const i=$('ci'),m=i.value.trim().slice(0,100);if(!m||!RM||!S.mp)return;const t=performance.now();if(t-(S.ct||0)<600)return;S.ct=t;i.value='';mpe({t:'chat',m})}
+function gotChat(p,m){const pr=(S.peers||[]).find(q=>q.peer==p),n=(pr?nm(pr):'?')+(pr&&pr.isMe?' (kamu)':'');S.chatLog.push({n,m:String(m||'').slice(0,100)});if(S.chatLog.length>30)S.chatLog.shift();if(cpOpen())renderChat(pr&&pr.isMe);else if(!(pr&&pr.isMe)){unread++;cbLab()}}
+$('cb').onclick=()=>cpOpen()?closeChat():openChat(0);$('cs').onclick=()=>{sendChat();if(!touch)$('ci').focus()};
+$('ci').addEventListener('keydown',e=>{e.stopPropagation();if(e.key=='Enter'){e.preventDefault();sendChat()}else if(e.key=='Escape')closeChat()});
+$('ci').addEventListener('focus',()=>{for(const k in keys)keys[k]=0});
+// ---------- input
+function setTP(v){S.tp=v?1:0;$('vw').value=S.tp;try{localStorage.setItem('b14tp',S.tp)}catch(e){}}setTP(S.tp);
+const keys={},J={id:null,x:0,y:0,ox:0,oy:0},L={id:null,x:0,y:0},LK={x:0,y:0};let drag=0;
+const playing=()=>S.mode!='menu';
+function act(){if(S.mode!='bus'&&S.mode!='term')return;const a=S.act;S.act=0;if(a==1||a==2){if(S.mp)mpe({t:'req',k:a==1?'travel':'exit'});else run(a==1?pressed:exited)}else if(a==3)run(board)}
+function pause(v){if(!playing())return;if(v)hidUI();S.paused=S.mp?0:v;$('pause').classList.toggle('hid',!v);if(v)syncExit();if(!v)lockReq()}
+function lockReq(){if(touch)return;try{const p=rd.domElement.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+addEventListener('keydown',e=>{if(document.activeElement&&document.activeElement.tagName=='INPUT')return;if(S.chatOpen){if(e.code=='Escape')closeChat();return}if(S.mp&&!S.chatOpen&&!$('cb').classList.contains('hid')&&e.code==S.ck){e.preventDefault();openChat(1);return}touch=false;keys[e.code]=1;if(e.code=='KeyE')act();if(e.code=='KeyF')setTP(S.tp?0:1);if(S.vk&&!S.voted){if(e.code=='KeyY')castV(1);if(e.code=='KeyN')castV(0)}if(e.code=='Escape'&&!document.pointerLockElement&&playing())pause($('pause').classList.contains('hid')?1:0)});
+addEventListener('keyup',e=>keys[e.code]=0);
+addEventListener('mousedown',e=>{if(e.target.id=='c')drag=1});addEventListener('mouseup',()=>drag=0);
+addEventListener('mousemove',e=>{if((document.pointerLockElement||drag)&&!S.paused&&playing()){LK.x+=cl(e.movementX,-150,150)*.0022*S.sens;LK.y+=cl(e.movementY,-150,150)*.0022*S.sens}});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement)S.locked=1;else if(S.locked){S.locked=0;if(playing()&&$('pause').classList.contains('hid')&&!S.chatOpen)pause(1)}});
+$('c').addEventListener('click',()=>{if(!touch&&playing()&&!S.paused&&!S.chatOpen&&!document.pointerLockElement)lockReq()});
+$('pb').onclick=()=>pause(1);$('vb').onclick=()=>setTP(S.tp?0:1);$('vw').onchange=e=>setTP(+e.target.value);$('eb').onclick=act;$('br').onclick=()=>pause(0);$('bm').onclick=leaveReq;
+document.querySelectorAll('.bk').forEach(b=>b.onclick=()=>{$('how').classList.add('hid');$('set').classList.add('hid');$('menu').classList.remove('hid')});
+$('bh').onclick=()=>{$('menu').classList.add('hid');$('how').classList.remove('hid')};$('bo').onclick=()=>{$('menu').classList.add('hid');$('set').classList.remove('hid')};
+// UI kustomisasi
+{const mk=(id,arr,key,sw)=>{const box=$(id);box.textContent='';arr.forEach((v,i)=>{if(!isOpen(key,i))return;const b=document.createElement('button');if(sw){b.className='sw';b.style.background=hx(v);b.title=i+1}else b.textContent=v;b.classList.toggle('on',C[key]==i);b.onclick=()=>{C[key]=i;saveC();pv()};box.append(b)})};
+function pv(){mk('zh',HATS,'hat',0);mk('zs',SH,'sh',1);mk('zp',PN,'pn',1);const s=hx(SH[C.sh]),p=hx(PN[C.pn]),h=hx(HC[C.hat]),k=C.hat;
+let t='<rect x="21" y="62" width="8" height="30" fill="'+p+'"/><rect x="31" y="62" width="8" height="30" fill="'+p+'"/><rect x="18" y="34" width="24" height="30" fill="'+s+'"/><rect x="10" y="34" width="7" height="26" fill="'+s+'"/><rect x="43" y="34" width="7" height="26" fill="'+s+'"/><circle cx="30" cy="24" r="11" fill="#d2a988"/><rect x="24" y="22" width="12" height="3" fill="#15181d"/>';
+if(k==1)t+='<path d="M18 22A12 12 0 0 1 42 22Z" fill="'+h+'"/><rect x="16" y="20" width="28" height="3" fill="'+h+'"/>';
+else if(k==2)t+='<rect x="22" y="0" width="16" height="15" fill="'+h+'"/><rect x="16" y="14" width="28" height="3" fill="'+h+'"/><rect x="22" y="11" width="16" height="3" fill="#8a2a2a"/>';
+else if(k==3)t+='<path d="M18 21A12 12 0 0 1 42 21Z" fill="'+h+'"/><circle cx="30" cy="9" r="3" fill="#d8dde3"/>';
+else if(k==4)t+='<ellipse cx="30" cy="16" rx="20" ry="3" fill="'+h+'"/><rect x="23" y="6" width="14" height="11" fill="'+h+'"/>';
+else if(k==5)t+='<polygon points="30,-6 41,16 19,16" fill="'+h+'"/><circle cx="30" cy="-6" r="2.5" fill="#d8dde3"/>';
+if(k==6)t+='<rect x="20" y="9" width="20" height="10" rx="2" fill="'+h+'"/><rect x="19" y="18" width="22" height="2" fill="#d9a93a"/>';
+else if(k==7)t+='<path d="M17 24A13 13 0 0 1 43 24" stroke="'+h+'" stroke-width="2.5" fill="none"/><rect x="14" y="21" width="5" height="9" fill="#555a60"/><rect x="41" y="21" width="5" height="9" fill="#555a60"/>';
+if(C.sh==11){for(let i=0;i<5;i++)t+='<rect x="'+(20+i*4.6)+'" y="34" width=".7" height="30" fill="#6f757d"/>';t+='<rect x="26" y="34" width="8" height="22" fill="#f2f2f2"/><rect x="28.5" y="36" width="3" height="18" fill="#0a0a0a"/>'}
+if(C.pn==10)[22.5,26.5,32.5,36.5].forEach(x=>t+='<rect x="'+x+'" y="64" width=".7" height="28" fill="#6f757d"/>');
+if(k==8)t+='<circle cx="30" cy="23" r="14" fill="'+h+'"/><rect x="21" y="18" width="18" height="9" fill="#08130d" stroke="#4a4e54" stroke-width="2"/>';
+if(C.sh==10)t+='<rect x="23" y="42" width="14" height="5" fill="#e70011"/><rect x="23" y="47" width="14" height="5" fill="#fff"/>';
+$('zv').innerHTML=t}
+$('bz').onclick=()=>{$('set').classList.add('hid');$('cz').classList.remove('hid');$('km').textContent='';pv()};$('zb').onclick=()=>{$('cz').classList.add('hid');$('set').classList.remove('hid')};
+const km=$('km'),kx=$('kx');
+function tryCode(){const v=kx.value.replace(/\s+/g,'').toUpperCase();if(!v)return;const r=CODES[kh('b14:'+v)];
+if(!r){km.style.color='#c0392b';km.textContent='KODE TIDAK VALID';return}
+const nw=r.filter(x=>!UN.includes(x));
+if(!nw.length){km.style.color='#8a8f96';km.textContent='SUDAH TERBUKA';kx.value='';return}
+UN.push(...nw);saveU();
+r.forEach(id=>{for(const k in UL)for(const i in UL[k])if(UL[k][i]==id)C[k]=+i});saveC();
+km.style.color='#d9a93a';km.textContent='AKSESORIS RAHASIA TERBUKA!';kx.value='';pv()}
+$('kb').onclick=tryCode;kx.addEventListener('keydown',e=>{e.stopPropagation();if(e.key=='Enter'){e.preventDefault();tryCode()}})}
+$('sn').oninput=e=>S.sens=+e.target.value;$('vl').oninput=e=>{S.vol=+e.target.value;if(mast)mast.gain.value=S.vol};
+$('bs').onclick=()=>{if(LD.busy)return;audio();if(AC&&AC.state=='suspended')AC.resume();$('menu').classList.add('hid');S.mp=0;S.n=1;S.nn=0;lockReq();loadGo('MEMUAT PERMAINAN',()=>run(()=>goTerm(0)))};
+const okT=t=>!t.target.closest('button,#cp,#vt');
+const inChat=e=>!!(e.target&&e.target.closest&&e.target.closest('#cp'));
+addEventListener('touchstart',e=>{touch=true;if(!playing()||S.paused)return;for(const t of e.changedTouches){if(!okT(t))continue;if(t.clientX<VW/2&&J.id==null){J.id=t.identifier;J.ox=cl(t.clientX,SA.l+58,VW/2);J.oy=cl(t.clientY,SA.t+58,VH-SA.b-58);const s=$('js').style;s.display='block';s.left=J.ox+'px';s.top=J.oy+'px'}else if(t.clientX>=VW/2&&L.id==null){L.id=t.identifier;L.x=t.clientX;L.y=t.clientY}}},{passive:true});
+addEventListener('touchmove',e=>{if(playing()&&!inChat(e))e.preventDefault();for(const t of e.changedTouches){if(t.identifier==J.id){const dx=cl(t.clientX-J.ox,-50,50),dy=cl(t.clientY-J.oy,-50,50);J.x=Math.abs(dx)<6?0:dx/50;J.y=Math.abs(dy)<6?0:dy/50;$('jk').style.transform=`translate(${dx}px,${dy}px)`}else if(t.identifier==L.id){LK.x+=(t.clientX-L.x)*.0055*S.sens;LK.y+=(t.clientY-L.y)*.0055*S.sens;L.x=t.clientX;L.y=t.clientY}}},{passive:false});
+const tend=e=>{for(const t of e.changedTouches){if(t.identifier==J.id){J.id=null;J.x=J.y=0;$('js').style.display='none';$('jk').style.transform=''}if(t.identifier==L.id)L.id=null}};addEventListener('touchend',tend);addEventListener('touchcancel',tend);
+// ---------- loop
+let last=performance.now(),tt=0;
+function loop(now){requestAnimationFrame(loop);const dt=Math.min((now-last)/1e3,.05);last=now;if(!S.paused){tt+=dt;upd(dt)}rd.render(scene,cam)}
+function upd(dt){const m=S.mode;let mv=0,txt='';S.act=0;if(m!==pm){pm=m;fy=yaw}
+if(m=='menu'){yaw=Math.sin(tt*.15)*.3;P0={x:0,z:1}}
+else{const f=1-Math.pow(1e-4,dt);yaw-=LK.x*f;pitch=cl(pitch-LK.y*f,-1.25,1.25);LK.x*=1-f;LK.y*=1-f;
+if(m=='term'||m=='bus'||m=='end'){let mx=(keys.KeyD?1:0)-(keys.KeyA?1:0)+J.x,mz=(keys.KeyS?1:0)-(keys.KeyW?1:0)+J.y;const l=Math.hypot(mx,mz);if(l>1){mx/=l;mz/=l}mv=l>.05;const s=Math.sin(yaw),c=Math.cos(yaw);P0.x+=(mx*c+mz*s)*2.3*dt;P0.z+=(-mx*s+mz*c)*2.3*dt;if(mv&&S.tp){const tg=Math.atan2(-(mx*c+mz*s),-(-mx*s+mz*c));let d=tg-fy;d=Math.atan2(Math.sin(d),Math.cos(d));fy+=d*Math.min(1,dt*12)}
+if(m=='bus'){P0.z=cl(P0.z,-4.3,4.7);P0.x=(P0.z>-2.4&&P0.z<3.6)?cl(P0.x,-.5,.5):cl(P0.x,-1.1,1.1)}else if(m=='end'){P0.x=P0.z<-2.6?cl(P0.x,-1.5,3.5):cl(P0.x,-8,3.5);P0.z=cl(P0.z,-10,3)}else{P0.x=cl(P0.x,-3.5,3.5);P0.z=cl(P0.z,-2.6,3)}}}
+if(m=='bus'&&!S.busy){const ex=P0.x>.6&&((P0.z>-4.2&&P0.z<-2.6)||P0.z>3.7);if(!S.done&&Math.hypot(P0.x-.75,P0.z+4.45)<1.4){txt='Tekan tombol';S.act=1}else if(ex&&!(S.mp&&S.done)){txt='Keluar dari bus';S.act=2}}
+else if(m=='term'&&S.dopen&&!S.mp&&Math.hypot(P0.x,P0.z+3.2)<1.9){txt='Naik bus';S.act=3}
+$('pr').textContent=txt&&!touch?'[E] '+txt:txt;$('eb').style.display=touch&&txt?'block':'none';
+const sh=S.travel?.03:0,tp=S.tp&&m!='menu';
+if(tp){const cp=Math.cos(pitch),dx=-Math.sin(yaw)*cp,dy=Math.sin(pitch),dz=-Math.cos(yaw)*cp,tx=P0.x,ty=1.45,tz=P0.z;let k=2.4;
+if(S.sc=='b'){const lim=(o,d,a,b)=>d>1e-4?(b-o)/d:d<-1e-4?(a-o)/d:1e9;k=Math.min(k,Math.max(.1,Math.min(lim(tx,-dx,-1.15,1.15),lim(tz,-dz,-5.8,4.9),lim(ty,-dy,.1,2.1))))}
+tpk=k;cam.position.set(tx-dx*k+Math.sin(tt*30)*sh,cl(ty-dy*k+.3+Math.sin(tt*41)*sh,.25,S.sc=='b'?2.3:8),tz-dz*k);cam.rotation.set(pitch,yaw,0,'YXZ')}
+else{fy=yaw;cam.position.set(P0.x+Math.sin(tt*30)*sh,1.6+(mv?Math.sin(tt*8)*.02:0)+Math.sin(tt*41)*sh,P0.z);cam.rotation.set(pitch,yaw,0,'YXZ')}
+{const a=ensureSelf();a.visible=!!tp&&tpk>.5;if(tp){a.position.set(P0.x,0,P0.z);a.rotation.y=fy;swing(a,mv?2.3:0,dt)}}
+if(S.dep)ext.position.x=S.dx+Math.pow((performance.now()-S.dep)/1000,2)*5;else if(S.arr){const k=cl((performance.now()-S.arr)/7800,0,1);ext.position.x=-60+57.8*(1-Math.pow(1-k,3))}
+if(S.travel)lamps.children.forEach(o=>{o.position.z+=dt*30;if(o.position.z>24)o.position.z-=48});
+if(m=='term'||m=='menu')tl.intensity=.9+Math.sin(tt*23)*.05*(Math.random()<.05?8:1);
+if(m=='bus'&&R.fx&&R.fx.length){R.t+=dt;for(let i=0;i<R.fx.length;i++)R.fx[i](dt)}
+mpTick(dt);if(hum){const g=S.mute?0:S.travel?.3:m=='bus'||m=='wait'?.1:.03;hum.gain.value+=(g-hum.gain.value)*dt*3}}
+toMenu();requestAnimationFrame(loop);
+
+// ---------- loading screen
+const LD={el:$('ld'),bar:$('ldb'),lb:$('ldl'),pc:$('ldp'),hint:$('ldh'),busy:0,warm:0,ht:0};
+const HINTS=['Periksa keadaan bus dengan teliti.','Jika ada yang berbeda, keluar lewat pintu bus.','Sampai BUS 14 untuk keluar.','Tidak semua yang tampak normal itu normal.'];
+function ldSet(p,t){LD.bar.style.width=p+'%';LD.pc.textContent=Math.round(p)+'%';if(t)LD.lb.textContent=t}
+function ldShow(t){const e=LD.el;clearTimeout(LD.ht);e.style.transition='none';LD.bar.style.transition='none';e.classList.remove('hid','off');ldSet(0,t);LD.hint.textContent=HINTS[Math.random()*HINTS.length|0];void e.offsetWidth;e.style.transition='';LD.bar.style.transition=''}
+function ldHide(){const e=LD.el;e.classList.add('off');LD.ht=setTimeout(()=>e.classList.add('hid'),700)}
+// pra-kompilasi shader & unggah geometri/tekstur sekali saja agar transisi ke game mulus
+function ldWarm(){if(LD.warm)return;LD.warm=1;try{setScene('b');buildBus();rd.render(scene,cam);setScene('t',1);rd.render(scene,cam);setScene('t');rd.render(scene,cam)}catch(e){console.error(e)}}
+async function loadGo(t,f){if(LD.busy)return;LD.busy=1;try{ldShow(t);await wait(40);ldSet(30,'MENYIAPKAN TERMINAL');await wait(220);ldWarm();ldSet(70,'MENYIAPKAN BUS');await wait(220);ldSet(100,'SIAP');await wait(160);f();await wait(60)}catch(e){console.error(e)}ldHide();LD.busy=0}
+async function boot(){LD.busy=1;try{ldSet(8,'MEMUAT ASET');await wait(60);ldSet(35,'MENYIAPKAN TERMINAL');await wait(60);ldWarm();ldSet(75,'MENYIAPKAN BUS');try{await Promise.race([document.fonts&&document.fonts.ready,wait(400)])}catch(e){}ldSet(100,'SIAP');await wait(250)}catch(e){console.error(e)}ldHide();LD.busy=0}
+boot();
+</script></body></html>
